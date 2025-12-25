@@ -1,5 +1,5 @@
 package com.example.EGA.config;
-import com.ega.bank.service.impl.UserServiceImpl;
+import com.example.EGA.service.impl.UserServiceImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
