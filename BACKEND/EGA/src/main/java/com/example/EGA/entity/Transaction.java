@@ -7,6 +7,8 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import com.example.EGA.enumerate.TypeTransaction;
+
 @Entity
 @Table(name = "transactions")
 @Data

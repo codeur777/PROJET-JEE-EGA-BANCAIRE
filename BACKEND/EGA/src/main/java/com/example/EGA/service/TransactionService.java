@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface TransactionService {
+    List<Transaction> listAll();
     Transaction depot(Compte compte, BigDecimal montant);
     Transaction retrait(Compte compte, BigDecimal montant);
     Transaction virement(Compte source, Compte destination, BigDecimal montant);

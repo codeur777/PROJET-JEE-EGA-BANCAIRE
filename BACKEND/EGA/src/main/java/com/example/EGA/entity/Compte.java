@@ -9,6 +9,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.example.EGA.enumerate.TypeCompte;
+
 @Entity
 @Table(name = "comptes")
 @Data

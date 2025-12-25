@@ -23,6 +23,11 @@ public class TransactionServiceImpl implements TransactionService {
     private CompteRepository compteRepository;
 
     @Override
+    public List<Transaction> listAll() {
+        return transactionRepository.findAll();
+    }
+
+    @Override
     public Transaction depot(Compte compte, BigDecimal montant) {
         compte.setSolde(compte.getSolde().add(montant));
         compteRepository.save(compte);

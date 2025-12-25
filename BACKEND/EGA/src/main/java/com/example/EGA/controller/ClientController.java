@@ -17,27 +17,27 @@ public class ClientController {
 
     @PostMapping
     public Client add(@RequestBody Client client) {
-        return clientService.save(client);
+        return clientService.saveClient(client);
     }
 
     @GetMapping
     public List<Client> list() {
-        return clientService.listAll();
+        return clientService.getAllClients();
     }
 
     @GetMapping("/{id}")
     public Client get(@PathVariable Long id) {
-        return clientService.findById(id);
+        return clientService.getClientById(id);
     }
 
     @PutMapping("/{id}")
     public Client update(@PathVariable Long id, @RequestBody Client client) {
-        return clientService.update(id, client);
+        return clientService.updateClient(id, client);
     }
 
     @DeleteMapping("/{id}")
     public String delete(@PathVariable Long id) {
-        clientService.delete(id);
+        clientService.deleteClient(id);
         return "Client supprimé avec succès !";
     }
 }
