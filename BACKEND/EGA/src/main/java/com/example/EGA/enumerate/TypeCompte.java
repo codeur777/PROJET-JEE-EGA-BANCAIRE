@@ -1,5 +1,6 @@
 package com.example.EGA.enumerate;
 
-public class TypeCompte {
-    
+public enum TypeCompte {
+    COURANT,
+    EPARGNE
 }

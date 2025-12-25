@@ -6,6 +6,7 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import com.example.EGA.enumerate.Sexe;
 
 @Entity
 @Table(name = "clients")

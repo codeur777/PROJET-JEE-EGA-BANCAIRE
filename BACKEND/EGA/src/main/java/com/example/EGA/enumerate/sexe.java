@@ -1,5 +1,7 @@
 package com.example.EGA.enumerate;
 
-public class sexe {
-    
+
+public enum Sexe {
+    HOMME,
+    FEMME
 }

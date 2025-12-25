@@ -1,5 +1,7 @@
 package com.example.EGA.enumerate;
 
-public class TypeTransaction {
-    
+public enum TypeTransaction {
+    DEPOT,
+    RETRAIT,
+    VIREMENT
 }

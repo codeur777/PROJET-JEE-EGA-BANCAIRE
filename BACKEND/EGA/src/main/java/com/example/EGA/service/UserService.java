@@ -1,5 +1,10 @@
 package com.example.EGA.service;
 
-public class UserService {
-    
+
+import com.example.EGA.entity.User;
+import org.springframework.security.core.userdetails.UserDetailsService;
+
+public interface UserService extends UserDetailsService {
+    User saveUser(User user);
 }
+
