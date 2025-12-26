@@ -31,12 +31,17 @@ public class SecurityConfig {
                         "/v3/api-docs/**",
                         "/v3/api-docs.yaml",
                         "/swagger-resources/**",
-                        "/webjars/**"
+                        "/webjars/**",
+                        "/h2-console",
+                        "/h2-console/**"
                 ).permitAll()
-
+                
                 // Le reste protégé
                 .anyRequest().authenticated()
             )
+
+            .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
+
             // Important : notre filtre JWT avant le filtre Spring Security
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
