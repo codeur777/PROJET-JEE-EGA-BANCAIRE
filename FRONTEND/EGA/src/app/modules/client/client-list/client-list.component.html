@@ -1,0 +1,22 @@
+<h2>Liste des clients</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Nom & Prénom</th><th>Email</th><th>Téléphone</th><th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let c of clients">
+      <td>{{ c.nom }} {{ c.prenom }}</td>
+      <td>{{ c.email }}</td>
+      <td>{{ c.telephone }}</td>
+      <td>
+        <button routerLink="/client/edit/{{c.id}}">Modifier</button>
+        <button (click)="deleteClient(c.id!)" class="delete-btn">Supprimer</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<button routerLink="/client/add">+ Nouveau Client</button>

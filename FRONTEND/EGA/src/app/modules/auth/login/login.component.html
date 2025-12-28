@@ -1,0 +1,16 @@
+<div class="login-container">
+  <h2>Connexion</h2>
+
+  <form (submit)="login(); $event.preventDefault()">
+    <input type="email" placeholder="Email" [(ngModel)]="email" name="email" required>
+    <input type="password" placeholder="Mot de passe" [(ngModel)]="password" name="password" required>
+
+    <button [disabled]="loading">
+      {{ loading ? "Connexion..." : "Se connecter" }}
+    </button>
+  </form>
+
+  <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
+
+  <p>Pas de compte ? <a routerLink="/register">Créer un compte</a></p>
+</div>
