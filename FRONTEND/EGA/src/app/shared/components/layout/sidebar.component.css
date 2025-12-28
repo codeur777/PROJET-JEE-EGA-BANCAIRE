@@ -1,0 +1,9 @@
+.sidebar{
+  width:230px;background:#e8eefc;height:100vh;position:fixed;top:60px;
+  display:flex;flex-direction:column;padding-top:20px;
+}
+.sidebar a{
+  padding:12px 20px;border-bottom:1px solid #d2d7e3;
+  text-decoration:none;color:#002e66;font-weight:500;
+}
+.sidebar a:hover{background:#004aad;color:white;}

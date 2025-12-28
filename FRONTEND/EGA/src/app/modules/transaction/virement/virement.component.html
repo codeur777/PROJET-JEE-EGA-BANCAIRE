@@ -1,0 +1,9 @@
+<app-card title="🔁 Virement bancaire">
+  <form (submit)="virer(); $event.preventDefault()">
+    <input type="number" placeholder="Compte source" [(ngModel)]="data.source" name="src">
+    <input type="number" placeholder="Compte destination" [(ngModel)]="data.destination" name="dest">
+    <input type="number" placeholder="Montant" [(ngModel)]="data.montant" name="mont">
+    <button>Envoyer</button>
+    <p>{{result}}</p>
+  </form>
+</app-card>

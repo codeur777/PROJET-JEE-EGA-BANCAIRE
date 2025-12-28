@@ -1,0 +1,17 @@
+<app-card title="📚 Historique des transactions">
+  <form (ngSubmit)="loadHistorique()">
+    <label>ID Compte: <input type="number" [(ngModel)]="compteId" name="compteId"></label>
+    <label>Début: <input type="date" [(ngModel)]="debut" name="debut"></label>
+    <label>Fin: <input type="date" [(ngModel)]="fin" name="fin"></label>
+    <button type="submit">Rechercher</button>
+  </form>
+  <table>
+    <tr><th>Type</th><th>Montant</th><th>Date</th><th>Compte</th></tr>
+    <tr *ngFor="let h of historique">
+      <td>{{h.type}}</td>
+      <td>{{h.montant}} CFA</td>
+      <td>{{h.dateOperation | date}}</td>
+      <td>{{h.compteId}}</td>
+    </tr>
+  </table>
+</app-card>

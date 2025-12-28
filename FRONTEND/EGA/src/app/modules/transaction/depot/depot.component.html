@@ -1,0 +1,8 @@
+<app-card title="📥 Dépôt d'argent">
+  <form (submit)="depot(); $event.preventDefault()">
+    <input type="number" placeholder="ID compte" [(ngModel)]="form.compteId" name="id">
+    <input type="number" placeholder="Montant" [(ngModel)]="form.montant" name="montant">
+    <button>Valider le dépôt</button>
+    <p *ngIf="message">{{message}}</p>
+  </form>
+</app-card>

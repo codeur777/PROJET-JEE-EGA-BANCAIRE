@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { Compte } from '../../shared/models/compte.model';
 
 @Injectable({
   providedIn: 'root'
@@ -11,19 +13,19 @@ export class CompteService {
 
   constructor(private http: HttpClient) {}
 
-  getAll() {
-    return this.http.get(this.api);
+  getComptes(): Observable<Compte[]> {
+    return this.http.get<Compte[]>(this.api);
   }
 
-  getById(id: number) {
-    return this.http.get(`${this.api}/${id}`);
+  getById(id: number): Observable<Compte> {
+    return this.http.get<Compte>(`${this.api}/${id}`);
   }
 
-  create(data: any) {
-    return this.http.post(this.api, data);
+  createCompte(data: any): Observable<Compte> {
+    return this.http.post<Compte>(this.api, data);
   }
 
-  delete(id: number) {
-    return this.http.delete(`${this.api}/${id}`);
+  delete(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.api}/${id}`);
   }
 }

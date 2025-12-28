@@ -1,0 +1,8 @@
+<app-card title="📤 Retrait">
+  <form (submit)="retirer(); $event.preventDefault()">
+    <input type="number" placeholder="ID Compte" [(ngModel)]="form.compteId" name="id">
+    <input type="number" placeholder="Montant" [(ngModel)]="form.montant" name="montant">
+    <button>Confirmer retrait</button>
+    <p>{{msg}}</p>
+  </form>
+</app-card>

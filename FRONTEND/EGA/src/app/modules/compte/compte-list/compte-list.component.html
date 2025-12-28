@@ -1,0 +1,27 @@
+<div class="compte-list">
+  <h2>Liste des Comptes</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Numéro</th>
+        <th>Solde</th>
+        <th>Type</th>
+        <th>Statut</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let c of comptes">
+        <td>{{ c.id }}</td>
+        <td>{{ c.numeroCompte }}</td>
+        <td>{{ c.solde }}</td>
+        <td>{{ c.type }}</td>
+        <td>{{ c.statut }}</td>
+        <td>
+          <button routerLink="/compte/edit/{{c.id}}">Modifier</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

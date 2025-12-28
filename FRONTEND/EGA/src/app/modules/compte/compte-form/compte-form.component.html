@@ -1,0 +1,32 @@
+<div class="compte-form">
+  <h2>Ajouter Compte</h2>
+  <form (ngSubmit)="save()">
+    <div>
+      <label for="numeroCompte">Numéro de Compte</label>
+      <input type="text" id="numeroCompte" [(ngModel)]="compte.numeroCompte" name="numeroCompte" required>
+    </div>
+    <div>
+      <label for="solde">Solde</label>
+      <input type="number" id="solde" [(ngModel)]="compte.solde" name="solde" required>
+    </div>
+    <div>
+      <label for="type">Type</label>
+      <select id="type" [(ngModel)]="compte.type" name="type">
+        <option value="COURANT">Courant</option>
+        <option value="EPARGNE">Épargne</option>
+      </select>
+    </div>
+    <div>
+      <label for="statut">Statut</label>
+      <select id="statut" [(ngModel)]="compte.statut" name="statut">
+        <option value="OUVERT">Ouvert</option>
+        <option value="FERME">Fermé</option>
+      </select>
+    </div>
+    <div>
+      <label for="clientId">ID Client</label>
+      <input type="number" id="clientId" [(ngModel)]="compte.clientId" name="clientId" required>
+    </div>
+    <button type="submit">Sauvegarder</button>
+  </form>
+</div>

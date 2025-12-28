@@ -1,9 +1,12 @@
 import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { ClientService } from '../../../core/services/client.service';
 import { Client } from '../../../shared/models/client.model';
 
 @Component({
   selector: 'app-client-list',
+  imports: [CommonModule, RouterModule],
   templateUrl: './client-list.component.html',
   styleUrls: ['./client-list.component.css']
 })
@@ -17,7 +20,7 @@ export class ClientListComponent implements OnInit {
   }
 
   loadClients() {
-    this.clientService.getClients().subscribe(data => this.clients = data);
+    this.clientService.getClients().subscribe((data: Client[]) => this.clients = data);
   }
 
   deleteClient(id: number) {
