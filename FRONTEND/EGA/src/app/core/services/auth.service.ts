@@ -13,15 +13,30 @@ export class AuthService {
   constructor(private http: HttpClient, private router: Router) {}
 
   login(email: string, password: string) {
-    return this.http.post(`${this.api}/login`, {email, password});
+    console.log('📩 Envoi de la requête:', email, password);
+    
+    // ✅ CORRECTION : Envoyer "email" au lieu de "username"
+    return this.http.post(`${this.api}/login`, {
+      email: email,        // ← Backend attend "email"
+      password: password
+    });
   }
 
   register(data: any) {
-    return this.http.post(`${this.api}/register`, data);
+    // S'assurer que username est défini (peut être l'email par défaut)
+    const registerData = {
+      username: data.fullname || data.email,  // Utiliser fullname comme username
+      email: data.email,
+      password: data.password
+    };
+    
+    console.log('📝 Données d\'inscription:', registerData);
+    return this.http.post(`${this.api}/register`, registerData);
   }
 
   logout() {
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
     this.router.navigate(['/login']);
   }
 

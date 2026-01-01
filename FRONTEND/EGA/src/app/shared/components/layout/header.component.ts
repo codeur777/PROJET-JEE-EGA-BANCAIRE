@@ -3,9 +3,8 @@ import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-header',
-  imports: [CommonModule],
+  standalone: true,
   templateUrl: './header.component.html',
-  styleUrls: ['./header.component.css']
 })
 export class HeaderComponent {
   user = localStorage.getItem('user') || 'Utilisateur';

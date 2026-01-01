@@ -1,13 +1,35 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { HeaderComponent } from '../../shared/components/layout/header.component';
-import { SidebarComponent } from '../../shared/components/layout/sidebar.component';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, RouterModule, HeaderComponent, SidebarComponent],
-  templateUrl: './home.components.html',
-  styleUrls: ['./home.component.css']
+  standalone: true,
+  templateUrl: './home.component.html',
+  styleUrls: ['./home.component.css'],
+  imports: [
+    CommonModule,
+    HeaderComponent,
+    HttpClientModule // <-- IMPORTANT !
+  ]
 })
-export class HomeComponent {}
+export class HomeComponent implements OnInit {
+
+  message: string = "Vérification connexion...";
+
+  constructor(private http: HttpClient) {}
+
+  ngOnInit(): void {
+    this.http.get('http://localhost:8082/api/test/ping', { responseType: 'text' })
+      .subscribe({
+        next: (res) => {
+          console.log("Connexion Backend OK ✔️ -->", res);
+        },
+        error: (err) => {
+          console.error("Erreur ❌ -->", err);
+          this.message = "Backend non connecté ❌";
+        }
+      });
+  }
+}

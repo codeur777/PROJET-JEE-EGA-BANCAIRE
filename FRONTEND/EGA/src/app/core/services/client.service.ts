@@ -32,4 +32,9 @@ export class ClientService {
   deleteClient(id: number): Observable<void> {
     return this.http.delete<void>(`${this.api}/${id}`);
   }
+  
+  testBackendConnection() {
+  return this.http.get(`${environment.apiUrl}/test/ping`, { responseType: 'text' });
+}
+
 }

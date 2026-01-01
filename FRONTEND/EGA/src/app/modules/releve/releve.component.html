@@ -1,0 +1,252 @@
+<div class="releve-container">
+  <!-- HEADER -->
+  <div class="page-header">
+    <div class="page-title">
+      <img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=60&h=60&fit=crop" 
+           alt="Relevé" 
+           class="page-icon">
+      <div>
+        <h1>Génération de Relevé Bancaire</h1>
+        <p class="subtitle">Générez et imprimez les relevés de compte</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- FILTRES -->
+  <div class="releve-filters">
+    <h3 class="section-title">🔍 Paramètres du relevé</h3>
+    
+    <form #releveForm="ngForm" (ngSubmit)="generateReleve()">
+      <div class="filter-grid">
+        <div class="form-group">
+          <label for="compteId">Compte *</label>
+          <select 
+            id="compteId" 
+            name="compteId"
+            [(ngModel)]="filters.compteId" 
+            required>
+            <option value="">-- Sélectionner un compte --</option>
+            <option *ngFor="let compte of comptes" [value]="compte.id">
+              {{ compte.numeroCompte }} - {{ compte.type }} ({{ compte.solde }} CFA)
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="dateDebut">Date de début *</label>
+          <input 
+            type="date" 
+            id="dateDebut" 
+            name="dateDebut"
+            [(ngModel)]="filters.dateDebut" 
+            required
+            max="{{ filters.dateFin }}">
+        </div>
+
+        <div class="form-group">
+          <label for="dateFin">Date de fin *</label>
+          <input 
+            type="date" 
+            id="dateFin" 
+            name="dateFin"
+            [(ngModel)]="filters.dateFin" 
+            required
+            min="{{ filters.dateDebut }}"
+            max="{{ today }}">
+        </div>
+
+        <div class="form-group">
+          <label for="format">Format d'export</label>
+          <select 
+            id="format" 
+            name="format"
+            [(ngModel)]="filters.format">
+            <option value="PDF">PDF</option>
+            <option value="EXCEL">Excel</option>
+            <option value="CSV">CSV</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="filter-actions">
+        <button type="button" class="btn-reset" (click)="resetFilters()">
+          🔄 Réinitialiser
+        </button>
+        <button 
+          type="submit" 
+          class="btn-generate" 
+          [disabled]="releveForm.invalid || loading">
+          <span *ngIf="!loading">📊 Générer le relevé</span>
+          <span *ngIf="loading">⏳ Génération...</span>
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- PRÉVISUALISATION DU RELEVÉ -->
+  <div class="releve-preview" [class.hidden]="!showPreview" id="releveDocument">
+    <div class="preview-header">
+      <h2 class="preview-title">📄 Prévisualisation du relevé</h2>
+      <div class="preview-actions">
+        <button class="btn-print" (click)="printReleve()">
+          🖨️ Imprimer
+        </button>
+        <button class="btn-download" (click)="downloadReleve()">
+          💾 Télécharger PDF
+        </button>
+      </div>
+    </div>
+
+    <div class="releve-document">
+      <!-- EN-TÊTE DU RELEVÉ -->
+      <div class="releve-header-doc">
+        <div class="bank-info">
+          <div class="bank-logo">
+            <div class="bank-logo-icon">💳</div>
+            <h1 class="bank-name">EGA BANK</h1>
+          </div>
+          <div class="bank-details">
+            <p><strong>Siège social:</strong> Avenue de la Libération, Lomé, Togo</p>
+            <p><strong>Téléphone:</strong> +228 22 XX XX XX</p>
+            <p><strong>Email:</strong> contact@egabank.tg</p>
+            <p><strong>Site web:</strong> www.egabank.tg</p>
+          </div>
+        </div>
+
+        <div class="releve-info">
+          <h2 class="releve-type">RELEVÉ DE COMPTE</h2>
+          <div class="releve-meta">
+            <p><strong>Période:</strong> {{ filters.dateDebut | date:'dd/MM/yyyy' }} au {{ filters.dateFin | date:'dd/MM/yyyy' }}</p>
+            <p><strong>Date d'édition:</strong> {{ today | date:'dd/MM/yyyy HH:mm' }}</p>
+            <p><strong>N° Relevé:</strong> REL-{{ generateReleveNumber() }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- INFORMATIONS CLIENT -->
+      <div class="client-section">
+        <h3 class="section-title">👤 Informations du titulaire</h3>
+        <div class="client-details-grid" *ngIf="selectedCompte">
+          <div class="detail-item">
+            <span class="detail-label">Nom complet</span>
+            <span class="detail-value">{{ selectedClient?.nom }} {{ selectedClient?.prenom }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Email</span>
+            <span class="detail-value">{{ selectedClient?.email }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Téléphone</span>
+            <span class="detail-value">{{ selectedClient?.telephone }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Adresse</span>
+            <span class="detail-value">{{ selectedClient?.adresse }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- INFORMATIONS DU COMPTE -->
+      <div class="compte-section">
+        <h3 class="section-title">💳 Détails du compte</h3>
+        <div class="compte-grid" *ngIf="selectedCompte">
+          <div class="compte-item">
+            <div class="compte-label">Numéro de compte</div>
+            <div class="compte-value">{{ selectedCompte.numeroCompte }}</div>
+          </div>
+          <div class="compte-item">
+            <div class="compte-label">Type de compte</div>
+            <div class="compte-value">{{ selectedCompte.type }}</div>
+          </div>
+          <div class="compte-item">
+            <div class="compte-label">Solde actuel</div>
+            <div class="compte-value solde-highlight">{{ selectedCompte.solde | number:'1.2-2' }} CFA</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TABLEAU DES TRANSACTIONS -->
+      <div class="transactions-section">
+        <h3 class="section-title">📋 Historique des transactions</h3>
+        
+        <table class="transactions-table" *ngIf="transactions.length > 0">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Libellé</th>
+              <th>Type</th>
+              <th class="text-right">Débit</th>
+              <th class="text-right">Crédit</th>
+              <th class="text-right">Solde</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let tx of transactions; let i = index">
+              <td>{{ tx.dateOperation | date:'dd/MM/yyyy HH:mm' }}</td>
+              <td>{{ getLibelle(tx) }}</td>
+              <td>
+                <span class="transaction-type" [ngClass]="{
+                  'depot': tx.type === 'DEPOT',
+                  'retrait': tx.type === 'RETRAIT',
+                  'virement': tx.type === 'VIREMENT'
+                }">
+                  {{ tx.type }}
+                </span>
+              </td>
+              <td class="text-right">
+                <span class="amount-debit" *ngIf="isDebit(tx)">
+                  -{{ tx.montant | number:'1.2-2' }} CFA
+                </span>
+              </td>
+              <td class="text-right">
+                <span class="amount-credit" *ngIf="!isDebit(tx)">
+                  +{{ tx.montant | number:'1.2-2' }} CFA
+                </span>
+              </td>
+              <td class="text-right">
+                <strong>{{ calculateSolde(i) | number:'1.2-2' }} CFA</strong>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div *ngIf="transactions.length === 0" class="empty-state">
+          <p>Aucune transaction trouvée pour cette période</p>
+        </div>
+      </div>
+
+      <!-- RÉSUMÉ -->
+      <div class="summary-section">
+        <h3 class="section-title">📊 Résumé de la période</h3>
+        <div class="summary-grid">
+          <div class="summary-item">
+            <div class="summary-label">Nombre d'opérations</div>
+            <div class="summary-value">{{ transactions.length }}</div>
+          </div>
+          <div class="summary-item">
+            <div class="summary-label">Total crédits</div>
+            <div class="summary-value positive">+{{ getTotalCredits() | number:'1.2-2' }} CFA</div>
+          </div>
+          <div class="summary-item">
+            <div class="summary-label">Total débits</div>
+            <div class="summary-value negative">-{{ getTotalDebits() | number:'1.2-2' }} CFA</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PIED DE PAGE -->
+      <div class="releve-footer">
+        <div class="footer-note">
+          <p><strong>Note:</strong> Ce document est un relevé de compte officiel généré électroniquement.</p>
+          <p>Pour toute réclamation, veuillez contacter notre service client dans un délai de 30 jours.</p>
+        </div>
+        <div class="footer-signature">
+          <p>Lomé, le {{ today | date:'dd MMMM yyyy' }}</p>
+          <div class="signature-line">
+            Direction EGA BANK
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

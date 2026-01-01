@@ -1,26 +1,296 @@
-<div class="client-form">
-  <h2>{{ id ? 'Modifier' : 'Ajouter' }} Client</h2>
-  <form (ngSubmit)="save()">
-    <div>
-      <label for="nom">Nom</label>
-      <input type="text" id="nom" [(ngModel)]="client.nom" name="nom" required>
+<div class="client-form-container">
+  <!-- HEADER -->
+  <div class="form-header">
+    <button class="back-button" routerLink="/client" title="Retour">
+      ←
+    </button>
+    <div class="form-header-content">
+      <h1>{{ id ? 'Modifier le client' : 'Nouveau client' }}</h1>
+      <p class="breadcrumb">
+        <a routerLink="/home">Accueil</a> / 
+        <a routerLink="/client">Clients</a> / 
+        {{ id ? 'Modification' : 'Création' }}
+      </p>
     </div>
-    <div>
-      <label for="prenom">Prénom</label>
-      <input type="text" id="prenom" [(ngModel)]="client.prenom" name="prenom" required>
+  </div>
+
+  <!-- SUCCESS MESSAGE -->
+  <div class="success-message" *ngIf="successMessage">
+    ✅ {{ successMessage }}
+  </div>
+
+  <!-- FORM -->
+  <form (ngSubmit)="save()" #clientForm="ngForm">
+    <div class="form-card">
+      
+      <!-- INFORMATIONS PERSONNELLES -->
+      <div class="form-section">
+        <div class="section-header">
+          <img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=48&h=48&fit=crop" 
+               alt="Info" 
+               class="section-icon">
+          <div>
+            <h2 class="section-title">Informations personnelles</h2>
+            <p class="section-subtitle">Renseignez les informations d'identité du client</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group" [class.error]="nom.invalid && nom.touched">
+            <label for="nom">
+              Nom <span class="required-mark">*</span>
+            </label>
+            <input 
+              type="text" 
+              id="nom" 
+              name="nom"
+              [(ngModel)]="client.nom" 
+              #nom="ngModel"
+              required
+              minlength="2"
+              placeholder="Ex: DUPONT">
+            <span class="input-error" *ngIf="nom.invalid && nom.touched">
+              ⚠️ Le nom est requis (min. 2 caractères)
+            </span>
+          </div>
+
+          <div class="form-group" [class.error]="prenom.invalid && prenom.touched">
+            <label for="prenom">
+              Prénom <span class="required-mark">*</span>
+            </label>
+            <input 
+              type="text" 
+              id="prenom" 
+              name="prenom"
+              [(ngModel)]="client.prenom" 
+              #prenom="ngModel"
+              required
+              minlength="2"
+              placeholder="Ex: Jean">
+            <span class="input-error" *ngIf="prenom.invalid && prenom.touched">
+              ⚠️ Le prénom est requis (min. 2 caractères)
+            </span>
+          </div>
+
+          <div class="form-group" [class.error]="email.invalid && email.touched">
+            <label for="email">
+              Email <span class="required-mark">*</span>
+            </label>
+            <input 
+              type="email" 
+              id="email" 
+              name="email"
+              [(ngModel)]="client.email" 
+              #email="ngModel"
+              required
+              email
+              placeholder="exemple@email.com">
+            <span class="input-error" *ngIf="email.invalid && email.touched">
+              ⚠️ Email invalide
+            </span>
+          </div>
+
+          <div class="form-group" [class.error]="telephone.invalid && telephone.touched">
+            <label for="telephone">
+              Téléphone <span class="required-mark">*</span>
+            </label>
+            <input 
+              type="tel" 
+              id="telephone" 
+              name="telephone"
+              [(ngModel)]="client.telephone" 
+              #telephone="ngModel"
+              required
+              pattern="[0-9]{8,15}"
+              placeholder="Ex: 90012345">
+            <span class="input-hint">Format: 8 à 15 chiffres</span>
+            <span class="input-error" *ngIf="telephone.invalid && telephone.touched">
+              ⚠️ Numéro de téléphone invalide
+            </span>
+          </div>
+
+          <div class="form-group">
+            <label for="dateNaissance">
+              Date de naissance
+            </label>
+            <input 
+              type="date" 
+              id="dateNaissance" 
+              name="dateNaissance"
+              [(ngModel)]="client.dateNaissance">
+          </div>
+
+          <div class="form-group">
+            <label for="sexe">
+              Sexe
+            </label>
+            <select 
+              id="sexe" 
+              name="sexe"
+              [(ngModel)]="client.sexe">
+              <option value="">-- Sélectionner --</option>
+              <option value="HOMME">Homme</option>
+              <option value="FEMME">Femme</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="nationalite">
+              Nationalité
+            </label>
+            <select 
+              id="nationalite" 
+              name="nationalite"
+              [(ngModel)]="client.nationalite">
+              <option value="">-- Sélectionner --</option>
+              <option value="Togolaise">Togolaise</option>
+              <option value="Béninoise">Béninoise</option>
+              <option value="Ivoirienne">Ivoirienne</option>
+              <option value="Ghanéenne">Ghanéenne</option>
+              <option value="Burkinabè">Burkinabè</option>
+              <option value="Nigériane">Nigériane</option>
+              <option value="Française">Française</option>
+              <option value="Autre">Autre</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="statut">
+              Statut du compte
+            </label>
+            <select 
+              id="statut" 
+              name="statut"
+              [(ngModel)]="client.statut">
+              <option value="ACTIF">Actif</option>
+              <option value="INACTIF">Inactif</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- COORDONNÉES -->
+      <div class="form-section">
+        <div class="section-header">
+          <img src="https://images.unsplash.com/photo-1524661135-423995f22d0b?w=48&h=48&fit=crop" 
+               alt="Adresse" 
+               class="section-icon">
+          <div>
+            <h2 class="section-title">Coordonnées</h2>
+            <p class="section-subtitle">Adresse et localisation du client</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group" style="grid-column: 1 / -1;" [class.error]="adresse.invalid && adresse.touched">
+            <label for="adresse">
+              Adresse complète <span class="required-mark">*</span>
+            </label>
+            <textarea 
+              id="adresse" 
+              name="adresse"
+              [(ngModel)]="client.adresse" 
+              #adresse="ngModel"
+              required
+              rows="3"
+              placeholder="Ex: 123 Rue de la Paix, Quartier Bè, Lomé"></textarea>
+            <span class="input-error" *ngIf="adresse.invalid && adresse.touched">
+              ⚠️ L'adresse est requise
+            </span>
+          </div>
+
+          <div class="form-group">
+            <label for="ville">
+              Ville
+            </label>
+            <input 
+              type="text" 
+              id="ville" 
+              name="ville"
+              [(ngModel)]="client.ville"
+              placeholder="Ex: Lomé">
+          </div>
+
+          <div class="form-group">
+            <label for="codePostal">
+              Code postal
+            </label>
+            <input 
+              type="text" 
+              id="codePostal" 
+              name="codePostal"
+              [(ngModel)]="client.codePostal"
+              placeholder="Ex: 00228">
+          </div>
+        </div>
+      </div>
+
+      <!-- DOCUMENTS -->
+      <div class="form-section">
+        <div class="section-header">
+          <img src="https://images.unsplash.com/photo-1568667256549-094345857637?w=48&h=48&fit=crop" 
+               alt="Documents" 
+               class="section-icon">
+          <div>
+            <h2 class="section-title">Documents et pièces d'identité</h2>
+            <p class="section-subtitle">Pièces justificatives du client (optionnel)</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="typeDocument">
+              Type de document
+            </label>
+            <select 
+              id="typeDocument" 
+              name="typeDocument"
+              [(ngModel)]="client.typeDocument">
+              <option value="">-- Sélectionner --</option>
+              <option value="CNI">Carte Nationale d'Identité</option>
+              <option value="PASSEPORT">Passeport</option>
+              <option value="PERMIS">Permis de conduire</option>
+              <option value="AUTRE">Autre</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="numeroDocument">
+              Numéro du document
+            </label>
+            <input 
+              type="text" 
+              id="numeroDocument" 
+              name="numeroDocument"
+              [(ngModel)]="client.numeroDocument"
+              placeholder="Ex: TG123456789">
+          </div>
+        </div>
+
+        <div class="document-upload" *ngIf="!id">
+          <div class="upload-icon">📄</div>
+          <p><strong>Glissez-déposez</strong> vos fichiers ici</p>
+          <p style="font-size: 0.9rem; color: #64748b;">ou cliquez pour parcourir</p>
+          <input type="file" hidden (change)="onFileSelected($event)" #fileInput>
+          <button type="button" class="upload-button" (click)="fileInput.click()">
+            Choisir un fichier
+          </button>
+        </div>
+      </div>
+
+      <!-- ACTIONS -->
+      <div class="form-actions">
+        <a routerLink="/client" class="btn-cancel">
+          ✕ Annuler
+        </a>
+        <button 
+          type="submit" 
+          class="btn-submit" 
+          [disabled]="clientForm.invalid || loading">
+          <span *ngIf="!loading">✓ {{ id ? 'Enregistrer les modifications' : 'Créer le client' }}</span>
+          <span *ngIf="loading">⏳ Enregistrement...</span>
+        </button>
+      </div>
     </div>
-    <div>
-      <label for="email">Email</label>
-      <input type="email" id="email" [(ngModel)]="client.email" name="email" required>
-    </div>
-    <div>
-      <label for="telephone">Téléphone</label>
-      <input type="text" id="telephone" [(ngModel)]="client.telephone" name="telephone" required>
-    </div>
-    <div>
-      <label for="adresse">Adresse</label>
-      <input type="text" id="adresse" [(ngModel)]="client.adresse" name="adresse" required>
-    </div>
-    <button type="submit">Sauvegarder</button>
   </form>
 </div>
