@@ -1,6 +1,5 @@
 package com.example.EGA.exception;
 
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -20,6 +19,31 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(SoldeInsuffisantException.class)
     public ResponseEntity<?> handleSoldeInsuffisant(SoldeInsuffisantException ex) {
+        return buildResponse(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    // ✅ NOUVEAU : Gestion des erreurs d'authentification
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<?> handleAuthenticationException(AuthenticationException ex) {
+        return buildResponse(ex.getMessage(), HttpStatus.UNAUTHORIZED);
+    }
+
+    // ✅ NOUVEAU : Gestion des RuntimeException génériques (email déjà utilisé, etc.)
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<?> handleRuntimeException(RuntimeException ex) {
+        // Si le message contient des mots-clés d'authentification
+        if (ex.getMessage().contains("Email") || 
+            ex.getMessage().contains("Mot de passe") ||
+            ex.getMessage().contains("incorrect")) {
+            return buildResponse(ex.getMessage(), HttpStatus.UNAUTHORIZED);
+        }
+        
+        // Si c'est une erreur de duplication (email déjà utilisé)
+        if (ex.getMessage().contains("déjà utilisé")) {
+            return buildResponse(ex.getMessage(), HttpStatus.CONFLICT);
+        }
+        
+        // Autres erreurs
         return buildResponse(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 

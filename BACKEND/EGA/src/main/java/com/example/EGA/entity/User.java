@@ -20,12 +20,15 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank
-    @Column(unique = true)
-    private String username;
+  /*   @NonNull
+    private String username; */
 
     @NotBlank
     private String password;
+
+    @NotBlank
+    @Column(unique = true)
+    private String email;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -35,6 +38,11 @@ public class User implements UserDetails {
     @Override
     public boolean isAccountNonExpired() {
         return true;
+    }
+
+    @Override
+    public String getUsername() {
+        return this.email; // L’email devient l'identifiant de connexion
     }
 
     @Override
