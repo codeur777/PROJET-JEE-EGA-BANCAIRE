@@ -81,10 +81,10 @@ export class ReleveComponent implements OnInit {
         this.selectedCompte = compte;
 
         // Charger le client associé
-        this.clientService.getClientById(compte.clientId).subscribe({
-          next: (client: Client) => {
+        this.clientService.getClientById(compte.clientId!).subscribe({
+            next: (client: Client) => {
             this.selectedClient = client;
-          },
+        },
           error: (err) => {
             console.error('Erreur lors du chargement du client:', err);
           }

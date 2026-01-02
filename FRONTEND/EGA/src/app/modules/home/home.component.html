@@ -1,122 +1,59 @@
 
-<app-header></app-header>
+<app-sidebar></app-sidebar> 
 <div class="home-container">
   <!-- HERO SECTION -->
   <section class="hero">
+    <app-header></app-header> 
     <div class="hero-content">
       <div class="hero-text">
         <h1>Bienvenue sur <span class="brand">EGA BANK</span></h1>
-        <p class="hero-subtitle">La banque digitale qui simplifie votre gestion financière</p>
-        <p class="hero-description">Profitez d'une expérience bancaire moderne, sécurisée et accessible 24h/24, où que vous soyez.</p>
+        <p class="hero-subtitle">Votre banque digitale simple et sécurisée</p>
+        <p class="hero-description">Gérez vos finances en toute tranquillité, 24h/24, depuis n'importe quel appareil.</p>
         <div class="hero-actions">
           <button class="btn-primary" routerLink="/login">Accéder à mon espace</button>
           <button class="btn-secondary" routerLink="/compte">Ouvrir un compte</button>
         </div>
       </div>
       <div class="hero-image">
-        <img src="https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=600&h=400&fit=crop" alt="Banking Digital" />
+        <img src="https://img.freepik.com/premium-psd/kingold-modern-professional-online-banking-hero-image_637394-665.jpg" alt="Banking Digital Moderne" />
       </div>
     </div>
   </section>
 
-  <!-- FONCTIONNALITÉS -->
+  <!-- FONCTIONNALITÉS PRINCIPALES -->
   <section class="features">
-    <h2 class="section-title">Nos services</h2>
+    <h2 class="section-title">Nos fonctionnalités principales</h2>
     <div class="features-grid">
       <div class="feature-card" routerLink="/client">
         <div class="feature-image">
-          <img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=400&h=250&fit=crop" alt="Gestion Clients" />
+          <img src="https://media.istockphoto.com/id/1176409268/vector/woman-bank-operator-character-sitting-at-desk-with-computer-and-business-man-client.jpg?s=1024x1024&w=is&k=20&c=Vhk85mxAmdjPUFs04ybL5dV9L9X5M8HPPcbIhtVEmF8=" alt="Gestion Clients" />
         </div>
         <div class="feature-content">
-          <h3>Gestion Clients</h3>
-          <p>Créez et gérez facilement vos profils clients avec un espace sécurisé et intuitif.</p>
-          <span class="feature-link">En savoir plus →</span>
+          <h3>Gestion des clients</h3>
+          <p>Créez, consultez et gérez facilement les profils de vos clients.</p>
         </div>
       </div>
-
+<!--
       <div class="feature-card" routerLink="/compte">
         <div class="feature-image">
-          <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&h=250&fit=crop" alt="Comptes bancaires" />
+          <img src="https://www.midwestbankcentre.com/wp-content/uploads/2025/02/iStock-2143222197.jpg" alt="Gestion des comptes" />
         </div>
         <div class="feature-content">
-          <h3>Comptes bancaires</h3>
-          <p>Ouvrez et gérez vos comptes en quelques clics. Consultez vos soldes en temps réel.</p>
-          <span class="feature-link">En savoir plus →</span>
+          <h3>Gestion des comptes</h3>
+          <p>Ouvrez de nouveaux comptes et suivez les soldes en temps réel.</p>
         </div>
       </div>
-
+-->
       <div class="feature-card" routerLink="/transaction/virement">
         <div class="feature-image">
-          <img src="https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=400&h=250&fit=crop" alt="Transactions" />
+          <img src="https://static.vecteezy.com/system/resources/previews/036/527/822/non_2x/illustration-of-secure-online-banking-transactions-digital-online-payment-concept-vector.jpg" alt="Transactions" />
         </div>
         <div class="feature-content">
-          <h3>Transactions</h3>
-          <p>Effectuez vos virements, dépôts et retraits en toute sécurité, 24h/24.</p>
-          <span class="feature-link">En savoir plus →</span>
+          <h3> Gestion des comptes et transactions</h3>
+          <p> Ouvrez de nouveaux comptes et suivez les soldes en temps réel. Effectuez dépôts, retraits, virements et consultez l'historique en toute sécurité.</p>
         </div>
       </div>
     </div>
-  </section>
-
-  <!-- AVANTAGES -->
-  <section class="benefits">
-    <h2 class="section-title">Pourquoi choisir EGA BANK ?</h2>
-    <div class="benefits-grid">
-      <div class="benefit-item">
-        <img src="https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=80&h=80&fit=crop" alt="Sécurité" />
-        <h4>Sécurité maximale</h4>
-        <p>Protection bancaire de niveau 3 avec cryptage de bout en bout</p>
-      </div>
-      <div class="benefit-item">
-        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=80&h=80&fit=crop" alt="Rapidité" />
-        <h4>Transactions instantanées</h4>
-        <p>Virements et opérations traités en temps réel</p>
-      </div>
-      <div class="benefit-item">
-        <img src="https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=80&h=80&fit=crop" alt="Support" />
-        <h4>Support 24/7</h4>
-        <p>Une équipe dédiée disponible à tout moment</p>
-      </div>
-      <div class="benefit-item">
-        <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=80&h=80&fit=crop" alt="Interface" />
-        <h4>Interface intuitive</h4>
-        <p>Gérez vos finances facilement depuis n'importe quel appareil</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- STATISTIQUES -->
-  <section class="stats">
-    <div class="stats-container">
-      <div class="stat-item">
-        <h2 class="stat-number">1,200+</h2>
-        <p class="stat-label">Transactions traitées</p>
-        <span class="stat-badge">Ce mois-ci</span>
-      </div>
-      <div class="stat-item">
-        <h2 class="stat-number">800+</h2>
-        <p class="stat-label">Clients fidèles</p>
-        <span class="stat-badge">Et ça augmente</span>
-      </div>
-      <div class="stat-item">
-        <h2 class="stat-number">350+</h2>
-        <p class="stat-label">Comptes ouverts</p>
-        <span class="stat-badge">Cette année</span>
-      </div>
-      <div class="stat-item">
-        <h2 class="stat-number">99.9%</h2>
-        <p class="stat-label">Disponibilité</p>
-        <span class="stat-badge">Fiabilité</span>
-      </div>
-    </div>
-  </section>
-
-  <!-- CTA FINAL -->
-  <section class="cta">
-    <div class="cta-content">
-      <h2>Prêt à rejoindre EGA BANK ?</h2>
-      <p>Ouvrez votre compte en moins de 5 minutes</p>
-      <button class="btn-cta" routerLink="/login">Commencer maintenant</button>
-    </div>
+    <p class="features-note">Une fois connecté, accédez à toutes ces fonctionnalités via le menu latéral (Tableau de bord, Relevé bancaire, etc.).</p>
   </section>
 </div>

@@ -25,6 +25,10 @@ export class CompteService {
     return this.http.post<Compte>(this.api, data);
   }
 
+  updateCompte(id: number, data: Compte): Observable<Compte> {
+    return this.http.put<Compte>(`${this.api}/${id}`, data);
+  }
+
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.api}/${id}`);
   }

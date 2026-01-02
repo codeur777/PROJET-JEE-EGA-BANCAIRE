@@ -36,5 +36,14 @@ export class ClientService {
   testBackendConnection() {
   return this.http.get(`${environment.apiUrl}/test/ping`, { responseType: 'text' });
 }
+  uploadDocument(clientId: number, file: File) {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    return this.http.post(
+      `${this.api}/${clientId}/upload`,
+      formData
+    );
+  }
 
 }

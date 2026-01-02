@@ -4,5 +4,15 @@ export interface Compte {
   solde: number;
   type: string; // COURANT | EPARGNE
   statut: string; // OUVERT | BLOQUE | FERME
-  clientId: number;
+  clientId?: number | null ;
+  dateCreation?: Date | string;
+  // createdAt?: string | Date;
+  
+  // Relation avec le client (peut être chargé par le backend)
+  client?: {
+    id?: number;
+    nom: string;
+    prenom: string;
+    email: string;
+  };
 }

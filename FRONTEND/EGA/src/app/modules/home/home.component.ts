@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { HeaderComponent } from '../../shared/components/layout/header.component';
+import { SidebarComponent } from '../../shared/components/layout/sidebar.component';
+
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -11,6 +13,7 @@ import { CommonModule } from '@angular/common';
   imports: [
     CommonModule,
     HeaderComponent,
+    SidebarComponent,
     HttpClientModule // <-- IMPORTANT !
   ]
 })

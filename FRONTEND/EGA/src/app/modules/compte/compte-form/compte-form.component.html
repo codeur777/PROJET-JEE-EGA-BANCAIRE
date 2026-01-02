@@ -1,32 +1,230 @@
-<div class="compte-form">
-  <h2>Ajouter Compte</h2>
-  <form (ngSubmit)="save()">
-    <div>
-      <label for="numeroCompte">Numéro de Compte</label>
-      <input type="text" id="numeroCompte" [(ngModel)]="compte.numeroCompte" name="numeroCompte" required>
+<div class="compte-form-container">
+  <!-- HEADER -->
+  <div class="form-header">
+    <button class="back-button" routerLink="/compte" title="Retour">
+      ←
+    </button>
+    <div class="form-header-content">
+      <h1>{{ id ? 'Modifier le compte' : 'Nouveau compte bancaire' }}</h1>
+      <p class="breadcrumb">
+        <a routerLink="/home">Accueil</a> / 
+        <a routerLink="/compte">Comptes</a> / 
+        {{ id ? 'Modification' : 'Création' }}
+      </p>
     </div>
-    <div>
-      <label for="solde">Solde</label>
-      <input type="number" id="solde" [(ngModel)]="compte.solde" name="solde" required>
+  </div>
+
+  <!-- SUCCESS MESSAGE -->
+  <div class="success-message" *ngIf="successMessage">
+    ✅ {{ successMessage }}
+  </div>
+
+  <!-- FORM -->
+  <form (ngSubmit)="save()" #compteForm="ngForm">
+    <div class="form-card">
+      
+      <!-- TYPE DE COMPTE -->
+      <div class="form-section">
+        <div class="section-header">
+          <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=56&h=56&fit=crop" 
+               alt="Type" 
+               class="section-icon">
+          <div>
+            <h2 class="section-title">Type de compte</h2>
+            <p class="section-subtitle">Choisissez le type de compte bancaire</p>
+          </div>
+        </div>
+
+        <div class="type-selector">
+          <div class="type-option" 
+               [class.selected]="compte.type === 'COURANT'"
+               (click)="compte.type = 'COURANT'">
+            <div class="type-icon">💳</div>
+            <div class="type-name">Compte Courant</div>
+            <div class="type-description">
+              Pour les transactions quotidiennes et les opérations courantes
+            </div>
+          </div>
+
+          <div class="type-option" 
+               [class.selected]="compte.type === 'EPARGNE'"
+               (click)="compte.type = 'EPARGNE'">
+            <div class="type-icon">🏦</div>
+            <div class="type-name">Compte Épargne</div>
+            <div class="type-description">
+              Pour économiser et faire fructifier votre argent
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- INFORMATIONS DU COMPTE -->
+      <div class="form-section">
+        <div class="section-header">
+          <img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=56&h=56&fit=crop" 
+               alt="Info" 
+               class="section-icon">
+          <div>
+            <h2 class="section-title">Informations du compte</h2>
+            <p class="section-subtitle">Détails et paramètres du compte</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group full-width">
+            <label for="numeroCompte">
+              Numéro de compte <span class="required-mark">*</span>
+            </label>
+            <input 
+              type="text" 
+              id="numeroCompte" 
+              name="numeroCompte"
+              [(ngModel)]="compte.numeroCompte" 
+              required
+              placeholder="Ex: FR7630004000031234567890143"
+              #numeroCompte="ngModel">
+            <span class="input-hint">
+              Format IBAN international (sera généré automatiquement si laissé vide)
+            </span>
+            <span class="input-error" *ngIf="numeroCompte.invalid && numeroCompte.touched">
+              ⚠️ Le numéro de compte est requis
+            </span>
+          </div>
+
+          <div class="form-group">
+            <label for="solde">
+              Solde initial
+            </label>
+            <input 
+              type="number" 
+              id="solde" 
+              name="solde"
+              [(ngModel)]="compte.solde" 
+              min="0"
+              step="0.01"
+              placeholder="0.00">
+            <span class="input-hint">
+              Montant en CFA (0 par défaut)
+            </span>
+          </div>
+
+          <div class="form-group">
+            <label for="statut">
+              Statut du compte <span class="required-mark">*</span>
+            </label>
+            <select 
+              id="statut" 
+              name="statut"
+              [(ngModel)]="compte.statut"
+              required>
+              <option value="OUVERT">✅ Ouvert</option>
+              <option value="BLOQUE">🔒 Bloqué</option>
+              <option value="FERME">❌ Fermé</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROPRIÉTAIRE -->
+      <div class="form-section">
+        <div class="section-header">
+          <img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=56&h=56&fit=crop" 
+               alt="Client" 
+               class="section-icon">
+          <div>
+            <h2 class="section-title">Propriétaire du compte</h2>
+            <p class="section-subtitle">Associez ce compte à un client</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group full-width">
+            <label for="clientId">
+              Client <span class="required-mark">*</span>
+            </label>
+            <div class="client-search">
+              <select 
+                id="clientId" 
+                name="clientId"
+                [(ngModel)]="compte.clientId"
+                required
+                #clientId="ngModel">
+                <option [ngValue]="null" disabled>
+                    -- Sélectionner un client --
+                </option>
+
+                <option *ngFor="let client of clients" [ngValue]="client.id">
+                    {{ client.nom }} {{ client.prenom }} - {{ client.email }}
+                </option>
+
+              </select>
+            </div>
+            <span class="input-hint">
+              Sélectionnez le propriétaire du compte dans la liste
+            </span>
+            <span class="input-error" *ngIf="clientId.invalid && clientId.touched">
+              ⚠️ Vous devez sélectionner un client
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- PREVIEW -->
+      <div class="form-section" *ngIf="compte.numeroCompte && compte.clientId">
+        <div class="compte-preview">
+          <div class="preview-header">
+            <div>
+              <div class="preview-title">Aperçu du compte</div>
+              <div class="preview-subtitle">Vérifiez les informations avant de sauvegarder</div>
+            </div>
+            <div class="preview-badge">
+              {{ compte.type === 'COURANT' ? 'Compte Courant' : 'Compte Épargne' }}
+            </div>
+          </div>
+          
+          <div class="preview-numero">
+            {{ formatNumeroCompte(compte.numeroCompte) }}
+          </div>
+          
+          <div class="preview-info">
+            <div class="preview-item">
+              <div class="preview-label">Solde initial</div>
+              <div class="preview-value">{{ compte.solde | number:'1.2-2' }} CFA</div>
+            </div>
+            
+            <div class="preview-item">
+              <div class="preview-label">Statut</div>
+              <div class="preview-value">{{ compte.statut }}</div>
+            </div>
+            
+            <div class="preview-item">
+              <div class="preview-label">Type</div>
+              <div class="preview-value">{{ compte.type }}</div>
+            </div>
+            
+            <div class="preview-item">
+              <div class="preview-label">Propriétaire</div>
+              <div class="preview-value">
+                {{ getClientName(compte.clientId) }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ACTIONS -->
+      <div class="form-actions">
+        <a routerLink="/compte" class="btn-cancel">
+          ✕ Annuler
+        </a>
+        <button 
+          type="submit" 
+          class="btn-submit" 
+          [disabled]="compteForm.invalid || loading">
+          <span *ngIf="!loading">✓ {{ id ? 'Mettre à jour' : 'Créer le compte' }}</span>
+          <span *ngIf="loading">⏳ Enregistrement...</span>
+        </button>
+      </div>
     </div>
-    <div>
-      <label for="type">Type</label>
-      <select id="type" [(ngModel)]="compte.type" name="type">
-        <option value="COURANT">Courant</option>
-        <option value="EPARGNE">Épargne</option>
-      </select>
-    </div>
-    <div>
-      <label for="statut">Statut</label>
-      <select id="statut" [(ngModel)]="compte.statut" name="statut">
-        <option value="OUVERT">Ouvert</option>
-        <option value="FERME">Fermé</option>
-      </select>
-    </div>
-    <div>
-      <label for="clientId">ID Client</label>
-      <input type="number" id="clientId" [(ngModel)]="compte.clientId" name="clientId" required>
-    </div>
-    <button type="submit">Sauvegarder</button>
   </form>
 </div>

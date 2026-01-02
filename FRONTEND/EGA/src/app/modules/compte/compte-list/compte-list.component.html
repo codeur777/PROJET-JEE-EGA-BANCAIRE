@@ -1,27 +1,121 @@
-<div class="compte-list">
-  <h2>Liste des Comptes</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Numéro</th>
-        <th>Solde</th>
-        <th>Type</th>
-        <th>Statut</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let c of comptes">
-        <td>{{ c.id }}</td>
-        <td>{{ c.numeroCompte }}</td>
-        <td>{{ c.solde }}</td>
-        <td>{{ c.type }}</td>
-        <td>{{ c.statut }}</td>
-        <td>
-          <button routerLink="/compte/edit/{{c.id}}">Modifier</button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+<div class="compte-list-container">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="page-title">
+      <img src="https://img.icons8.com/fluency/96/bank-building.png" alt="Bank Icon" class="page-icon">
+      <div>
+        <h1>Liste des Comptes</h1>
+        <p class="subtitle">Gérez vos comptes bancaires</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button routerLink="/compte/add" class="btn-add">
+        <span>+</span> Nouveau Compte
+      </button>
+      <button (click)="loadComptes()" class="btn-refresh" title="Actualiser">
+        🔄
+      </button>
+    </div>
+  </div>
+
+  <!-- Statistics Cards -->
+  <div class="stats-cards">
+    <div class="stat-card primary">
+      <div class="stat-header">
+        <img src="https://img.icons8.com/fluency/56/bank-cards.png" alt="Total" class="stat-icon">
+        <div class="stat-content">
+          <div class="stat-label">Total Comptes</div>
+          <div class="stat-value">{{ comptes.length }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-card success">
+      <div class="stat-header">
+        <img src="https://img.icons8.com/fluency/56/money-bag-euro.png" alt="Solde" class="stat-icon">
+        <div class="stat-content">
+          <div class="stat-label">Solde Total</div>
+          <div class="stat-value">{{ getTotalSolde() | currency:'EUR':'symbol':'1.2-2':'fr' }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-card warning">
+      <div class="stat-header">
+        <img src="https://img.icons8.com/fluency/56/bank-card-back-side.png" alt="Courant" class="stat-icon">
+        <div class="stat-content">
+          <div class="stat-label">Comptes Courants</div>
+          <div class="stat-value">{{ getComptesByType('COURANT') }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-card info">
+      <div class="stat-header">
+        <img src="https://img.icons8.com/fluency/56/piggy-bank.png" alt="Épargne" class="stat-icon">
+        <div class="stat-content">
+          <div class="stat-label">Comptes Épargne</div>
+          <div class="stat-value">{{ getComptesByType('EPARGNE') }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Accounts Grid -->
+  <div class="comptes-grid" *ngIf="comptes.length > 0">
+    <div class="compte-card" *ngFor="let c of comptes; trackBy: trackById">
+      <div class="compte-card-header">
+        <div class="compte-type-badge">{{ c.type }}</div>
+        <div class="compte-numero">{{ formatNumeroCompte(c.numeroCompte) }}</div>
+        <div class="compte-date">ID: {{ c.id }}</div>
+      </div>
+
+      <div class="compte-card-body">
+        <div class="compte-solde-section">
+          <div class="solde-label">Solde Disponible</div>
+          <div class="solde-value">
+            <span>{{ c.solde | currency:'EUR':'symbol':'1.2-2':'fr' }}</span>
+            <span class="solde-currency">EUR</span>
+          </div>
+        </div>
+
+        <div class="compte-info-grid">
+          <div class="info-item">
+            <div class="info-label">Statut</div>
+            <div class="info-value">
+              <span class="status-badge" [ngClass]="c.statut.toLowerCase()">{{ c.statut }}</span>
+            </div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Type</div>
+            <div class="info-value">{{ c.type }}</div>
+          </div>
+        </div>
+        <div class="info-item">
+            <div class="info-label">Ouvert le</div>
+            <div class="info-value">{{ c.dateCreation | date:'dd/MM/yyyy' }}</div>
+        </div>
+
+        <div class="compte-actions">
+          <button routerLink="/compte/edit/{{c.id}}" class="btn-action btn-edit">
+            ✏️ Modifier
+          </button>
+          <button (click)="c.id && deleteCompte(c.id)" class="btn-action btn-delete">
+            🗑️ Supprimer
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="comptes.length === 0" class="empty-state">
+    <img src="https://img.icons8.com/fluency/150/bank-building.png" alt="No accounts" class="empty-icon">
+    <h3>Aucun compte trouvé</h3>
+    <p>Il n'y a encore aucun compte bancaire enregistré dans le système.</p>
+    <button routerLink="/compte/add" class="btn-add">
+      <span>+</span> Créer votre premier compte
+    </button>
+  </div>
+
 </div>

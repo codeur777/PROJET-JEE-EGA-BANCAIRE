@@ -30,21 +30,24 @@ export class ClientListComponent implements OnInit {
   }
 
   loadClients() {
-    this.clientService.getClients().subscribe({
-      next: (data: Client[]) => {
-        this.clients = data.map(c => ({
-          ...c,
-          statut: c.statut || 'ACTIF',
-          dateInscription: c.dateInscription || new Date()
-        }));
-        this.filteredClients = [...this.clients];
-      },
-      error: (err) => {
-        console.error('Erreur lors du chargement des clients:', err);
-        alert('Erreur lors du chargement des clients');
-      }
-    });
-  }
+  this.clientService.getClients().subscribe({
+    next: (data: Client[]) => {
+      this.clients = data.map(c => ({
+        ...c,
+        statut: c.statut ?? 'ACTIF',
+        dateInscription: c.dateInscription ?? new Date()
+      }));
+
+      this.filteredClients = [...this.clients];
+      this.filterClients(); // 🔥 FIX
+    },
+    error: (err) => {
+      console.error('Erreur lors du chargement des clients:', err);
+      alert('Erreur lors du chargement des clients');
+    }
+  });
+}
+
 
   filterClients() {
     this.filteredClients = this.clients.filter(c => {

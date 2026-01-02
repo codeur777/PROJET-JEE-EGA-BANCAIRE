@@ -121,7 +121,10 @@
         </tr>
       </thead>
       <tbody>
+        <!--<tr *ngFor="let c of filteredClients 
+            | slice:(currentPage-1)*itemsPerPage:(currentPage*itemsPerPage)"> -->
         <tr *ngFor="let c of filteredClients">
+
           <td>
             <div class="client-info">
               <img [src]="'https://ui-avatars.com/api/?name=' + c.nom + '+' + c.prenom + '&background=004aad&color=fff'" 

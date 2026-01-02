@@ -101,6 +101,18 @@
   transition: all 0.3s ease;
 }
 
+.benefit-item:nth-child(1) .benefit-icon {
+  background: rgba(245, 197, 66, 0.2);
+}
+
+.benefit-item:nth-child(2) .benefit-icon {
+  background: rgba(16, 185, 129, 0.2);
+}
+
+.benefit-item:nth-child(3) .benefit-icon {
+  background: rgba(59, 130, 246, 0.2);
+}
+
 .benefit-item:hover {
   background: rgba(255, 255, 255, 0.15);
   transform: translateX(10px);
@@ -387,4 +399,15 @@
   .register-container h2 {
     font-size: 1.8rem;
   }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  } 
 }

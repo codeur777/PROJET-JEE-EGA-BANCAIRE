@@ -5,8 +5,12 @@ import { Observable } from 'rxjs';
 @Injectable()
 export class JwtInterceptor implements HttpInterceptor {
 
-  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const token = localStorage.getItem('token');
+    
+    console.log('🔐 JwtInterceptor appelé');
+    console.log('📍 URL:', req.url);
+    console.log('🎫 Token:', token ? '✅ Présent' : '❌ Absent');
 
     if (token) {
       req = req.clone({
@@ -14,8 +18,11 @@ export class JwtInterceptor implements HttpInterceptor {
           Authorization: `Bearer ${token}`
         }
       });
+      console.log('✅ Header Authorization ajouté');
     }
 
     return next.handle(req);
   }
 }
+
+

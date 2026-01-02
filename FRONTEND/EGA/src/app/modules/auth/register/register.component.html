@@ -1,19 +1,150 @@
-<div class="register-container">
-  <h2>Inscription</h2>
-  <form (ngSubmit)="register()">
-    <div>
-      <label for="fullname">Nom complet</label>
-      <input type="text" id="fullname" [(ngModel)]="user.fullname" name="fullname" required>
+<div class="register-page">
+  <!-- Left side - Hero section -->
+  <div class="register-left">
+    <div class="register-logo">
+      <div class="logo-image">🏦</div>
+      <div class="logo-text">EGA Bank</div>
     </div>
-    <div>
-      <label for="email">Email</label>
-      <input type="email" id="email" [(ngModel)]="user.email" name="email" required>
+
+    <div class="register-hero">
+      <h1>Rejoignez EGA Bank</h1>
+      <p>Gérez vos finances en toute sécurité avec notre plateforme moderne et intuitive.</p>
     </div>
-    <div>
-      <label for="password">Mot de passe</label>
-      <input type="password" id="password" [(ngModel)]="user.password" name="password" required>
+
+    <div class="register-benefits">
+      <div class="benefit-item">
+        <div class="benefit-icon">🔒</div>
+        <div class="benefit-text">
+          <h4>Sécurité maximale</h4>
+          <p>Protection avancée de vos données financières</p>
+        </div>
+      </div>
+
+      <div class="benefit-item">
+        <div class="benefit-icon">⚡</div>
+        <div class="benefit-text">
+          <h4>Transactions rapides</h4>
+          <p>Effectuez vos opérations en quelques clics</p>
+        </div>
+      </div>
+
+      <div class="benefit-item">
+        <div class="benefit-icon">📊</div>
+        <div class="benefit-text">
+          <h4>Suivi en temps réel</h4>
+          <p>Surveillez vos comptes 24/7</p>
+        </div>
+      </div>
     </div>
-    <button type="submit">S'inscrire</button>
-  </form>
-  <p *ngIf="message">{{ message }}</p>
+  </div>
+
+  <!-- Right side - Registration form -->
+  <div class="register-right">
+    <div class="register-container">
+      <h2>Créer un compte</h2>
+      <p class="register-subtitle">Rejoignez-nous et commencez à gérer vos finances</p>
+
+      <!-- Success message -->
+      <div *ngIf="message && !isError" class="success-message">
+        <span>✅</span>
+        {{ message }}
+      </div>
+
+      <!-- Error message -->
+      <div *ngIf="message && isError" class="error-message">
+        {{ message }}
+      </div>
+
+      <form class="register-form" (ngSubmit)="register()" #registerForm="ngForm">
+        <!-- Full Name -->
+        <div class="form-group">
+          <label for="fullname">Nom complet</label>
+          <input
+            type="text"
+            id="fullname"
+            [(ngModel)]="user.fullname"
+            name="fullname"
+            required
+            placeholder="Votre nom complet">
+        </div>
+
+        <!-- Email -->
+        <div class="form-group">
+          <label for="email">Adresse email</label>
+          <input
+            type="email"
+            id="email"
+            [(ngModel)]="user.email"
+            name="email"
+            required
+            placeholder="votre.email@exemple.com">
+        </div>
+
+        <!-- Password -->
+        <div class="form-group">
+          <label for="password">Mot de passe</label>
+          <input
+            type="password"
+            id="password"
+            [(ngModel)]="user.password"
+            name="password"
+            required
+            (input)="checkPasswordStrength()"
+            placeholder="Votre mot de passe">
+
+          <!-- Password strength indicator -->
+          <div *ngIf="user.password" class="password-strength">
+            <div class="strength-bar">
+              <div class="strength-fill" [ngClass]="passwordStrength"></div>
+            </div>
+            <span class="strength-text">
+              Force du mot de passe:
+              <strong [ngClass]="passwordStrength">
+                {{ passwordStrength === 'weak' ? 'Faible' : passwordStrength === 'medium' ? 'Moyen' : 'Fort' }}
+              </strong>
+            </span>
+          </div>
+        </div>
+
+        <!-- Confirm Password -->
+        <div class="form-group">
+          <label for="confirmPassword">Confirmer le mot de passe</label>
+          <input
+            type="password"
+            id="confirmPassword"
+            [(ngModel)]="confirmPassword"
+            name="confirmPassword"
+            required
+            placeholder="Confirmez votre mot de passe">
+        </div>
+
+        <!-- Terms and Conditions -->
+        <div class="terms-checkbox">
+          <input
+            type="checkbox"
+            id="acceptTerms"
+            [(ngModel)]="acceptTerms"
+            name="acceptTerms"
+            required>
+          <label for="acceptTerms">
+            J'accepte les <a href="#" target="_blank">conditions générales d'utilisation</a> et la <a href="#" target="_blank">politique de confidentialité</a>
+          </label>
+        </div>
+
+        <!-- Submit Button -->
+        <button
+          type="submit"
+          class="register-btn"
+          [disabled]="loading || !registerForm.form.valid">
+          <span *ngIf="!loading">Créer mon compte</span>
+          <span *ngIf="loading">⏳ Création en cours...</span>
+        </button>
+      </form>
+
+      <!-- Login link -->
+      <div class="login-link">
+        Déjà un compte ? <a routerLink="/login">Se connecter</a>
+      </div>
+    </div>
+  </div>
 </div>
