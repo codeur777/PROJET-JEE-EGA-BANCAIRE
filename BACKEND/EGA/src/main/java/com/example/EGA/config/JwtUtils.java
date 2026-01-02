@@ -14,7 +14,7 @@ import java.util.function.Function;
 @Component
 public class JwtUtils {
 
-    private final String SECRET_KEY = "ega_bank_secret_key_2026";
+    private final String SECRET_KEY = "egaBankSecretKeyForJWT2026VerySecureAndLongEnoughForHS256Algorithm";
 
     private final long JWT_EXPIRATION = 1000 * 60 * 60 * 10; // 10 heures
 

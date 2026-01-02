@@ -29,6 +29,7 @@ public class Client {
     @Past(message = "La date de naissance doit être dans le passé")
     private LocalDate dateNaissance;
 
+
     @Enumerated(EnumType.STRING)
     private Sexe sexe;
 

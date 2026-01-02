@@ -1,0 +1,139 @@
+
+ je ne fait que des test actullement , ça ne marche pas  
+
+
+SQL> create table inscriptions(
+id integer auto increment, 
+id_cours varchar2(20),
+id_etudiant varchar2(20)
+date_inscriptions,
+foreign key(id_cours, id_etudiant)
+);  2    3    4    5    6    7  
+id integer auto increment,
+           *
+ERREUR a la ligne 2 :
+ORA-00907: parenthese de droite absente
+Exercice2:
+
+
+1.) 
+
+CREATE USER glsi_user IDENTIFIED BY glsi123 
+DEFAULT TABLESPACE USERS 
+TEMPORARY TABLESPACE TEMP;
+
+
+SQL> CREATE USER glsi_user IDENTIFIED BY glsi123 
+DEFAULT TABLESPACE USERS 
+TEMPORARY TABLESPACE TEMP;
+  2    3  
+Utilisateur cree.
+
+grant connect , resource to glsi_user;
+
+SQL> grant connect , resource to glsi_user;
+
+Autorisation de privileges (GRANT) acceptee.
+
+
+
+
+2-)
+
+connect glsi_user/glsi123;
+
+SQL> connect glsi_user/glsi123;
+Connecte.
+
+
+create table etudiants(
+id integer primary key,
+nom varchar2(20),
+prenom varchar2(50),
+email varchar(50),
+date_naissance varchar2(20)
+);
+
+SQL> create table etudiants(
+id integer primary key,
+nom varchar2(20),
+prenom varchar2(50),
+date_naissance varchar2(20)
+);  2    3    4    5    6  
+
+Table creee.
+
+
+create table cours(
+id integer primary key,
+nom_cours varchar2(20),
+volume_horaire numeric
+);
+
+SQL> create table cours(
+id integer primary key,
+nom_cours varchar2(20),
+volume_horaire numeric
+);  2    3    4    5  
+
+Table creee.
+
+
+create table enseignants(
+id integer primary key,
+nom varchar2(20),
+specialite varchar2(30)
+);
+
+
+SQL> create table enseignants(
+id integer primary key,
+nom varchar2(20),
+specialite varchar2(30)
+);  2    3    4    5  
+
+Table creee.
+ 
+
+create table inscriptions(
+id integer primary key ,
+id_cours varchar2(20),
+id_etudiant varchar2(20)
+date_inscriptions varchar2(30),
+foreign key(id_cours) reference cours(id),
+foreign key(id_etudiant) reference co(id)
+);
+
+
+3-) 
+
+insert into etudiants values (1,"falisco", "walter", "faliscowal@gmail.com", 20/02/1998);
+insert into etudiants values (2,"julien", "resko", "wal@gmail.com", 21/02/1998);
+insert into etudiants value (3,"luxus", "lou lou", "luxus@gmail.com", 22/02/1998);
+
+
+insert into cours values (1, "spc" , 2);
+insert into cours values (2, "ang" , 6);
+insert into cours values (3, "orc" , 9);
+
+
+insert into  enseignants values (1, julien , Aucune);
+insert into  enseignants values ("2", "julien" );
+
+
+
+
+insert into etudiants values ("1",falisco, walter,  20/02/1998);
+
+
+
+
+
+4-)
+
+declare 
+ etu varchar(3)
+begin 
+  select * to etu from cours 
+  where id = 1
+end 
