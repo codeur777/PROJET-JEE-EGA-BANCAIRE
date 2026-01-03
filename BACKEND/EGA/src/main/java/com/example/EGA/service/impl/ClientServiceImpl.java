@@ -40,8 +40,14 @@ public class ClientServiceImpl implements ClientService {
         existing.setEmail(client.getEmail());
         existing.setNationalite(client.getNationalite());
         existing.setSexe(client.getSexe());
+        existing.setStatut(client.getStatut());
+        existing.setVille(client.getVille());
+        existing.setCodePostal(client.getCodePostal());
+        existing.setTypeDocument(client.getTypeDocument());
+        existing.setNumeroDocument(client.getNumeroDocument());
         return clientRepository.save(existing);
     }
+
 
     @Override
     public void deleteClient(Long id) {

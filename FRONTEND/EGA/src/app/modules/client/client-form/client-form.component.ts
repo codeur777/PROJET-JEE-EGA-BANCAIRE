@@ -23,7 +23,7 @@ export class ClientFormComponent implements OnInit {
     telephone: '',
     adresse: '',
     statut: 'ACTIF',
-    dateNaissance: undefined,
+    dateNaissance: '',
     sexe: '',
     nationalite: 'Togolaise',
     ville: '',
@@ -122,15 +122,18 @@ export class ClientFormComponent implements OnInit {
     const formData = new FormData();
     formData.append('file', file);
 
-    this.http.post(`${environment.apiUrl}/clients/${this.id}/upload`, formData).subscribe({
-      next: (res: any) => {
-        console.log('✅ Upload réussi:', res);
-        alert('Fichier uploadé avec succès !');
-      },
-      error: (err) => {
-        console.error('❌ Erreur lors de l\'upload:', err);
-        alert('Erreur lors de l\'upload du fichier');
-      }
-    });
+      this.http.post(
+        `${environment.apiUrl}/clients/${this.id}/upload`,
+        formData,
+        { responseType: 'text' }   // 🔥 IMPORTANT
+      ).subscribe({
+        next: (res) => {
+          console.log('✅ Upload réussi:', res);
+        },
+        error: (err) => {
+          console.error('❌ Erreur upload:', err);
+        }
+      });
+
   }
 }

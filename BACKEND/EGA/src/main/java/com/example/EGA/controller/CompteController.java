@@ -1,10 +1,12 @@
 package com.example.EGA.controller;
 
+import com.example.EGA.dto.CompteDto;
 import com.example.EGA.entity.Compte;
 import com.example.EGA.entity.Transaction;
 import com.example.EGA.service.CompteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -14,13 +16,21 @@ import java.util.List;
 @RequestMapping("/api/comptes")
 @RequiredArgsConstructor
 @CrossOrigin("*")
-public class AccountController {
+public class CompteController {
 
     private final CompteService compteService;
 
+/* 
     @PostMapping
-    public Compte create(@RequestBody Compte compte) {
-        return compteService.createAccount(compte);
+    public Compte create(@RequestBody CompteDto dto) {
+    return compteService.createAccount(dto);
+    }
+
+*/
+
+    @GetMapping
+    public List<Compte> getAll() {
+        return compteService.getAllComptes();
     }
 
     @PostMapping("/{id}/deposit/{amount}")
@@ -48,5 +58,12 @@ public class AccountController {
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime end) {
         return compteService.getTransactionsWithinPeriod(id, start, end);
     }
+
+    @PostMapping
+    public ResponseEntity<Compte> create(@RequestBody CompteDto dto) {
+        Compte compte = compteService.createAccount(dto);
+        return ResponseEntity.ok(compte); // ✅ JSON valide
+    }
+
 }
 

@@ -7,6 +7,7 @@ import lombok.*;
 import java.time.LocalDate;
 import java.util.List;
 import com.example.EGA.enumerate.Sexe;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "clients")
@@ -46,7 +47,19 @@ public class Client {
     @NotBlank(message = "Nationalité obligatoire")
     private String nationalite;
 
+    @NotBlank(message = "Statut obligatoire")
+    private String statut;        // ex: ACTIF
+    @NotBlank(message = "Ville obligatoire")
+    private String ville;
+    @NotBlank(message = "Code postal obligatoire")
+    private String codePostal;
+    @NotBlank(message = "Type de document obligatoire")
+    private String typeDocument;
+    @NotBlank(message = "Numéro de document obligatoire")
+    private String numeroDocument;
+
     @OneToMany(mappedBy = "proprietaire", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Compte> comptes;
 }
 

@@ -4,7 +4,6 @@ package com.example.EGA.controller;
 import com.example.EGA.entity.Client;
 import com.example.EGA.service.ClientService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +24,7 @@ public class ClientController {
 
     private final ClientService clientService;
 
-    @PostMapping
+    @PostMapping("/add")
     public Client add(@RequestBody Client client) {
         return clientService.saveClient(client);
     }

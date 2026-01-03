@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import com.example.EGA.enumerate.TypeTransaction;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "transactions")
@@ -32,7 +33,9 @@ public class Transaction {
 
     @ManyToOne
     @JoinColumn(name = "compte_id")
+    @JsonIgnore
     private Compte compte;
+
 
     // Pour les virements
     @ManyToOne

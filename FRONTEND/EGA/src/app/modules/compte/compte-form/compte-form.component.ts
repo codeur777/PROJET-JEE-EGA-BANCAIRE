@@ -18,7 +18,7 @@ export class CompteFormComponent implements OnInit {
   compte: Compte = {
     numeroCompte: '',
     solde: 0,
-    type: 'COURANT',
+    typeCompte: 'COURANT',
     statut: 'OUVERT',
     clientId: null
   };
@@ -105,33 +105,40 @@ export class CompteFormComponent implements OnInit {
   return client ? `${client.nom} ${client.prenom}` : 'Client inconnu';
 }
 
-  save() {
-    this.loading = true;
-    
-    console.log('💾 Sauvegarde du compte:', this.compte);
-    
-    const request = this.id
-      ? this.compteService.updateCompte(this.id, this.compte)
-      : this.compteService.createCompte(this.compte);
+save() {
+  this.loading = true;
 
-    request.subscribe({
-      next: () => {
-        this.loading = false;
-        this.successMessage = this.id 
-          ? 'Compte modifié avec succès !' 
-          : 'Compte créé avec succès !';
-        
-        console.log('✅', this.successMessage);
-        
-        setTimeout(() => {
-          this.router.navigate(['/compte']);
-        }, 1500);
-      },
-      error: (err) => {
-        this.loading = false;
-        console.error('❌ Erreur lors de l\'enregistrement:', err);
-        alert('Une erreur est survenue lors de l\'enregistrement du compte');
-      }
-    });
+  // ✅ OBJET COMPATIBLE BACKEND (DTO)
+  const payload = {
+    numeroCompte: this.compte.numeroCompte,
+    typeCompte: this.compte.typeCompte,   // ⚠️ typeCompte, PAS type
+    solde: this.compte.solde,
+    clientId: this.compte.clientId
+  };
+
+  console.log('📤 Payload envoyé:', payload);
+
+  const request = this.id
+    ? this.compteService.updateCompte(this.id, payload)
+    : this.compteService.createCompte(payload);
+
+  request.subscribe({
+    next: () => {
+      this.loading = false;
+      this.successMessage = this.id
+        ? 'Compte modifié avec succès !'
+        : 'Compte créé avec succès !';
+
+      setTimeout(() => {
+        this.router.navigate(['/compte']);
+      }, 1500);
+    },
+    error: (err) => {
+      this.loading = false;
+      console.error('❌ Erreur:', err);
+      alert('Erreur lors de l’enregistrement du compte');
+    }
+  });
   }
+
 }

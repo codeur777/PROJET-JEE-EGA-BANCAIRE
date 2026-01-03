@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Compte } from '../../shared/models/compte.model';
+import { CompteCreateDTO } from '../../shared/models/compte-create.Dto';
 
 @Injectable({
   providedIn: 'root'
@@ -21,15 +22,22 @@ export class CompteService {
     return this.http.get<Compte>(`${this.api}/${id}`);
   }
 
-  createCompte(data: any): Observable<Compte> {
+  /* createCompte(data: any): Observable<Compte> {
     return this.http.post<Compte>(this.api, data);
+  } */
+
+  createCompte(dto: CompteCreateDTO) {
+  return this.http.post(`${this.api}`, dto);
   }
 
-  updateCompte(id: number, data: Compte): Observable<Compte> {
-    return this.http.put<Compte>(`${this.api}/${id}`, data);
+  updateCompte(id: number, dto: CompteCreateDTO) {
+    return this.http.put(`${this.api}/${id}`, dto);
   }
+
 
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.api}/${id}`);
   }
+
+
 }

@@ -27,7 +27,7 @@
             required>
             <option value="">-- Sélectionner un compte --</option>
             <option *ngFor="let compte of comptes" [value]="compte.id">
-              {{ compte.numeroCompte }} - {{ compte.type }} ({{ compte.solde }} CFA)
+              {{ compte.numeroCompte }} - {{ compte.typeCompte }} ({{ compte.solde }} CFA)
             </option>
           </select>
         </div>
@@ -156,7 +156,7 @@
           </div>
           <div class="compte-item">
             <div class="compte-label">Type de compte</div>
-            <div class="compte-value">{{ selectedCompte.type }}</div>
+            <div class="compte-value">{{ selectedCompte.typeCompte }}</div>
           </div>
           <div class="compte-item">
             <div class="compte-label">Solde actuel</div>

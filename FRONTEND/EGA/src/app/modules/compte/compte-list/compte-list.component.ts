@@ -12,57 +12,56 @@ import { Compte } from '../../../shared/models/compte.model';
   styleUrls: ['./compte-list.component.css']
 })
 export class CompteListComponent implements OnInit {
+
   comptes: Compte[] = [];
+  loading = false;
+  error = '';
 
   constructor(private compteService: CompteService) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.loadComptes();
   }
 
-  // ✅ AJOUT DE CETTE MÉTHODE POUR FIXER L'ERREUR
-  trackById(index: number, item: Compte): number | undefined {
-    return item.id;
+  trackById(_: number, c: Compte) {
+    return c.id;
   }
 
-  loadComptes() {
+  loadComptes(): void {
+    this.loading = true;
+    this.error = '';
+
     this.compteService.getComptes().subscribe({
-      next: (data: Compte[]) => {
+      next: (data) => {
         this.comptes = data;
-        console.log('✅ Comptes chargés:', this.comptes.length);
+        this.loading = false;
       },
-      error: (err) => {
-        console.error('❌ Erreur lors du chargement des comptes:', err);
-        alert('Erreur lors du chargement des comptes');
+      error: () => {
+        this.error = 'Impossible de charger les comptes';
+        this.loading = false;
       }
     });
   }
 
-  getTotalSolde(): number {
-    return this.comptes.reduce((sum, compte) => sum + (compte.solde || 0), 0);
+  totalSolde(): number {
+    return this.comptes.reduce((s, c) => s + (c.solde || 0), 0);
   }
 
-  getComptesByType(type: string): number {
-    return this.comptes.filter(c => c.type === type).length;
+  getComptesByType(type: 'COURANT' | 'EPARGNE'): number {
+    return this.comptes.filter(c => c.typeCompte === type).length;
   }
 
-  formatNumeroCompte(numero: string): string {
-    if (!numero) return 'N/A';
-    return numero.match(/.{1,4}/g)?.join(' ') || numero;
+  formatNumero(n: string): string {
+    return n?.match(/.{1,4}/g)?.join(' ') ?? '—';
   }
 
-  deleteCompte(id: number) {
-    if (confirm('Êtes-vous sûr de vouloir supprimer ce compte ?')) {
-      this.compteService.delete(id).subscribe({
-        next: () => {
-          alert('Compte supprimé avec succès');
-          this.loadComptes();
-        },
-        error: (err) => {
-          console.error('❌ Erreur lors de la suppression:', err);
-          alert('Erreur lors de la suppression du compte');
-        }
-      });
-    }
+  statutClass(statut?: string): string {
+    return statut ? statut.toLowerCase() : 'ouvert';
+  }
+
+  deleteCompte(id?: number) {
+    if (!id || !confirm('Supprimer ce compte ?')) return;
+
+    this.compteService.delete(id).subscribe(() => this.loadComptes());
   }
 }

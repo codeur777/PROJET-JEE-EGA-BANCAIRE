@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import com.example.EGA.enumerate.TypeCompte;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "comptes")
@@ -37,9 +38,11 @@ public class Compte {
 
     @ManyToOne
     @JoinColumn(name = "client_id")
+    @JsonIgnore
     private Client proprietaire;
 
     @OneToMany(mappedBy = "compte", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Transaction> transactions;
 
     @PrePersist

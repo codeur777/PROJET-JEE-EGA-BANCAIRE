@@ -2,44 +2,56 @@ package com.example.EGA.service.impl;
 
 
 
+import com.example.EGA.dto.CompteDto;
 import com.example.EGA.entity.Client;
 import com.example.EGA.entity.Compte;
 import com.example.EGA.entity.Transaction;
+import com.example.EGA.repository.ClientRepository;
 import com.example.EGA.repository.CompteRepository;
 import com.example.EGA.service.CompteService;
 import com.example.EGA.service.TransactionService;
+
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class CompteServiceImpl implements CompteService {
 
-    @Autowired
-    private CompteRepository compteRepository;
+    private final CompteRepository compteRepository;
+    private final ClientRepository clientRepository;
+    private final TransactionService transactionService;
 
-    @Autowired
-    private TransactionService transactionService;
-
-    @Override
-    public Compte createCompte(Client client, Compte compte) {
-        compte.setProprietaire(client);
-        compte.setSolde(compte.getSolde() != null ? compte.getSolde() : BigDecimal.ZERO);
-        return compteRepository.save(compte);
-    }
+    
 
     @Override
-    public Compte createAccount(Compte compte) {
-        compte.setSolde(compte.getSolde() != null ? compte.getSolde() : BigDecimal.ZERO);
+    public Compte createAccount(CompteDto dto) {
+
+        Client client = clientRepository.findById(dto.getClientId())
+                .orElseThrow(() -> new RuntimeException("Client introuvable"));
+
+        Compte compte = Compte.builder()
+                .numeroCompte(dto.getNumeroCompte())
+                .typeCompte(dto.getTypeCompte())
+                .solde(BigDecimal.valueOf(dto.getSolde()))
+                .dateCreation(LocalDate.now())
+                .proprietaire(client)
+                .build();
+
         return compteRepository.save(compte);
     }
 
     @Override
     public Compte getCompteById(Long id) {
-        return compteRepository.findById(id).orElseThrow(() -> new RuntimeException("Compte introuvable"));
+        return compteRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Compte introuvable"));
     }
 
     @Override
@@ -72,8 +84,15 @@ public class CompteServiceImpl implements CompteService {
     }
 
     @Override
-    public List<Transaction> getTransactionsWithinPeriod(Long id, LocalDateTime start, LocalDateTime end) {
+    public List<Transaction> getTransactionsWithinPeriod(
+            Long id,
+            LocalDateTime start,
+            LocalDateTime end
+    ) {
         Compte compte = getCompteById(id);
         return transactionService.getTransactionsByCompteAndPeriod(compte, start, end);
     }
+
 }
+
+    

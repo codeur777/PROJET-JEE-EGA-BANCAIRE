@@ -37,8 +37,8 @@
 
         <div class="type-selector">
           <div class="type-option" 
-               [class.selected]="compte.type === 'COURANT'"
-               (click)="compte.type = 'COURANT'">
+               [class.selected]="compte.typeCompte === 'COURANT'"
+               (click)="compte.typeCompte = 'COURANT'">
             <div class="type-icon">💳</div>
             <div class="type-name">Compte Courant</div>
             <div class="type-description">
@@ -47,8 +47,8 @@
           </div>
 
           <div class="type-option" 
-               [class.selected]="compte.type === 'EPARGNE'"
-               (click)="compte.type = 'EPARGNE'">
+               [class.selected]="compte.typeCompte === 'EPARGNE'"
+               (click)="compte.typeCompte = 'EPARGNE'">
             <div class="type-icon">🏦</div>
             <div class="type-name">Compte Épargne</div>
             <div class="type-description">
@@ -178,7 +178,7 @@
               <div class="preview-subtitle">Vérifiez les informations avant de sauvegarder</div>
             </div>
             <div class="preview-badge">
-              {{ compte.type === 'COURANT' ? 'Compte Courant' : 'Compte Épargne' }}
+              {{ compte.typeCompte === 'COURANT' ? 'Compte Courant' : 'Compte Épargne' }}
             </div>
           </div>
           
@@ -199,7 +199,7 @@
             
             <div class="preview-item">
               <div class="preview-label">Type</div>
-              <div class="preview-value">{{ compte.type }}</div>
+              <div class="preview-value">{{ compte.typeCompte }}</div>
             </div>
             
             <div class="preview-item">

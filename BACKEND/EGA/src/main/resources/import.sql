@@ -11,8 +11,16 @@ INSERT INTO clients (id, nom, prenom, date_naissance, sexe, adresse, telephone, 
 INSERT INTO comptes (id, numero_compte, type_compte, date_creation, solde, proprietaire_id) VALUES
 (1, 'FR300030123400000001', 'COURANT', CURRENT_DATE, 50000, 1),
 (2, 'FR300030123400000002', 'EPARGNE', CURRENT_DATE, 120000, 2);
+-- 📌 Transactions
 
--- 📌 Transactions (mot réservé → garder ce nom mais MySQL accepte)
-INSERT INTO transactions (id, type_transaction, montant, date_transaction, compte_id, compte_dest_id) VALUES (1, 'DEPOT', 20000, CURRENT_TIMESTAMP, NULL, 1);
-INSERT INTO transactions (id, type_transaction, montant, date_transaction, compte_id, compte_dest_id) VALUES (2, 'RETRAIT', 15000, CURRENT_TIMESTAMP, 1, NULL);
-INSERT INTO transactions (id, type_transaction, montant, date_transaction, compte_id, compte_dest_id) VALUES (3, 'VIREMENT', 10000, CURRENT_TIMESTAMP, 1, 2);
+-- DEPOT sur le compte 1
+INSERT INTO transactions (id, type_transaction, montant, date_transaction, compte_id, compte_dest_id)
+VALUES (1, 'DEPOT', 20000, CURRENT_TIMESTAMP, 1, NULL);
+
+-- RETRAIT depuis le compte 1
+INSERT INTO transactions (id, type_transaction, montant, date_transaction, compte_id, compte_dest_id)
+VALUES (2, 'RETRAIT', 15000, CURRENT_TIMESTAMP, 1, NULL);
+
+-- VIREMENT du compte 1 vers le compte 2
+INSERT INTO transactions (id, type_transaction, montant, date_transaction, compte_id, compte_dest_id)
+VALUES (3, 'VIREMENT', 10000, CURRENT_TIMESTAMP, 1, 2);
