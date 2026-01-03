@@ -1,164 +1,117 @@
 <div class="compte-list-container">
-  <!-- HEADER AVEC DÉGRADÉ -->
+  <!-- HEADER -->
   <div class="page-header">
     <div class="page-title">
-      <div class="icon-wrapper">
-        <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=70&h=70&fit=crop" 
-             alt="Comptes" 
-             class="page-icon">
-      </div>
-      <div class="title-content">
-        <h1>💳 Comptes Bancaires</h1>
-        <p class="subtitle">Vue d'ensemble de tous vos comptes clients</p>
+      <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=48&h=48&fit=crop" 
+           alt="Comptes" 
+           class="page-icon">
+      <div>
+        <h1>Comptes Bancaires</h1>
+        <p class="subtitle">Gestion des comptes clients</p>
       </div>
     </div>
     
     <div class="header-actions">
       <button class="btn-refresh" (click)="loadComptes()" title="Actualiser">
-        <span class="refresh-icon">🔄</span>
+        🔄
       </button>
       <a routerLink="/compte/add" class="btn-add">
-        <span class="plus-icon">+</span>
-        <span>Nouveau Compte</span>
+        + Nouveau Compte
       </a>
     </div>
   </div>
 
-  <!-- STATISTICS CARDS -->
+  <!-- STATISTICS -->
   <div class="stats-cards">
-    <div class="stat-card primary">
-      <div class="stat-icon-bg">
-        <img src="https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=60&h=60&fit=crop" 
-             alt="Total" 
-             class="stat-icon">
-      </div>
-      <div class="stat-content">
+    <div class="stat-card">
+      <div class="stat-info">
         <div class="stat-label">Total Comptes</div>
         <div class="stat-value">{{ comptes.length }}</div>
-        <div class="stat-trend positive">
-          <span class="trend-icon">↗</span>
-          <span>+12% ce mois</span>
-        </div>
       </div>
+      <div class="stat-icon">💳</div>
     </div>
     
     <div class="stat-card success">
-      <div class="stat-icon-bg green">
-        <img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=60&h=60&fit=crop" 
-             alt="Solde" 
-             class="stat-icon">
-      </div>
-      <div class="stat-content">
+      <div class="stat-info">
         <div class="stat-label">Solde Total</div>
-        <div class="stat-value">{{ totalSolde() | number:'1.0-0' }}</div>
-        <div class="stat-currency">CFA</div>
+        <div class="stat-value">{{ totalSolde() | number:'1.0-0' }} CFA</div>
       </div>
+      <div class="stat-icon">💰</div>
     </div>
     
     <div class="stat-card warning">
-      <div class="stat-icon-bg orange">
-        <img src="https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=60&h=60&fit=crop" 
-             alt="Courants" 
-             class="stat-icon">
-      </div>
-      <div class="stat-content">
+      <div class="stat-info">
         <div class="stat-label">Comptes Courants</div>
         <div class="stat-value">{{ getComptesByType('COURANT') }}</div>
-        <div class="stat-trend neutral">Actifs</div>
       </div>
+      <div class="stat-icon">🏦</div>
     </div>
     
     <div class="stat-card info">
-      <div class="stat-icon-bg blue">
-        <img src="https://images.unsplash.com/photo-1579621970795-87facc2f976d?w=60&h=60&fit=crop" 
-             alt="Épargne" 
-             class="stat-icon">
-      </div>
-      <div class="stat-content">
+      <div class="stat-info">
         <div class="stat-label">Comptes Épargne</div>
         <div class="stat-value">{{ getComptesByType('EPARGNE') }}</div>
-        <div class="stat-trend positive">
-          <span class="trend-icon">↗</span>
-          <span>+8%</span>
-        </div>
       </div>
+      <div class="stat-icon">📊</div>
     </div>
   </div>
 
-  <!-- COMPTES GRID -->
-  <div class="comptes-grid" *ngIf="comptes.length > 0">
-    <div class="compte-card" *ngFor="let compte of comptes" [class.compte-epargne]="compte.typeCompte === 'EPARGNE'">
-      <!-- CARD HEADER -->
-      <div class="compte-card-header">
-        <div class="header-top">
-          <span class="compte-type-badge">
-            {{ compte.typeCompte === 'COURANT' ? '💳 Compte Courant' : '🏦 Compte Épargne' }}
-          </span>
-          <div class="chip-icon">💎</div>
+  <!-- COMPTES TABLE -->
+  <div class="comptes-section" *ngIf="comptes.length > 0">
+    <div class="section-header">
+      <h2>Liste des comptes ({{ comptes.length }})</h2>
+    </div>
+    
+    <div class="comptes-grid">
+      <div class="compte-card" *ngFor="let compte of comptes">
+        <!-- Badge type -->
+        <div class="compte-type" [class.epargne]="compte.typeCompte === 'EPARGNE'">
+          {{ compte.typeCompte === 'COURANT' ? 'Courant' : 'Épargne' }}
         </div>
         
-        <div class="compte-numero">{{ formatNumero(compte.numeroCompte) }}</div>
-        
-        <div class="header-bottom">
-          <div class="compte-date">
-            <span class="label">Ouvert le</span>
-            <span class="value">{{ compte.dateCreation | date:'dd/MM/yyyy' }}</span>
-          </div>
-          <div class="bank-logo">EGA</div>
-        </div>
-      </div>
-      
-      <!-- CARD BODY -->
-      <div class="compte-card-body">
-        <!-- SOLDE PRINCIPAL -->
-        <div class="solde-section">
-          <div class="solde-label">Solde disponible</div>
-          <div class="solde-amount">
-            <span class="amount">{{ compte.solde | number:'1.2-2' }}</span>
-            <span class="currency">CFA</span>
-          </div>
+        <!-- Numéro de compte -->
+        <div class="compte-numero">
+          {{ formatNumero(compte.numeroCompte) }}
         </div>
         
-        <!-- INFORMATIONS -->
-        <div class="compte-info-grid">
-          <div class="info-item">
-            <div class="info-icon">👤</div>
-            <div class="info-content">
-              <div class="info-label">Propriétaire</div>
-              <div class="info-value">{{ compte.client?.nom || 'Non défini' }}</div>
-            </div>
+        <!-- Solde -->
+        <div class="compte-solde">
+          <div class="solde-label">Solde</div>
+          <div class="solde-value">{{ compte.solde | number:'1.2-2' }} CFA</div>
+        </div>
+        
+        <!-- Infos -->
+        <div class="compte-infos">
+          <div class="info-row">
+            <span class="info-label">Propriétaire:</span>
+            <span class="info-value">{{ compte.client?.nom || 'Non défini' }}</span>
           </div>
-          
-          <div class="info-item">
-            <div class="info-icon">📊</div>
-            <div class="info-content">
-              <div class="info-label">Statut</div>
-              <div class="info-value">
-                <span class="status-badge" [ngClass]="{
-                  'ouvert': compte.statut === 'OUVERT',
-                  'ferme': compte.statut === 'FERME',
-                  'bloque': compte.statut === 'BLOQUE'
-                }">
-                  {{ compte.statut || 'OUVERT' }}
-                </span>
-              </div>
-            </div>
+          <div class="info-row">
+            <span class="info-label">Date:</span>
+            <span class="info-value">{{ compte.dateCreation | date:'dd/MM/yyyy' }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Statut:</span>
+            <span class="status-badge" [ngClass]="{
+              'ouvert': compte.statut === 'OUVERT',
+              'ferme': compte.statut === 'FERME',
+              'bloque': compte.statut === 'BLOQUE'
+            }">
+              {{ compte.statut || 'OUVERT' }}
+            </span>
           </div>
         </div>
         
-        <!-- ACTIONS -->
+        <!-- Actions -->
         <div class="compte-actions">
-          <button class="btn-action btn-details" title="Voir détails">
-            <span class="action-icon">👁️</span>
-            <span>Détails</span>
+          <button class="btn-action btn-view" title="Voir détails">
+            👁️
           </button>
           <button class="btn-action btn-edit" [routerLink]="['/compte/edit', compte.id]" title="Modifier">
-            <span class="action-icon">✏️</span>
-            <span>Modifier</span>
+            ✏️
           </button>
           <button class="btn-action btn-delete" (click)="deleteCompte(compte.id!)" title="Supprimer">
-            <span class="action-icon">🗑️</span>
-            <span>Supprimer</span>
+            🗑️
           </button>
         </div>
       </div>
@@ -167,16 +120,11 @@
   
   <!-- EMPTY STATE -->
   <div class="empty-state" *ngIf="comptes.length === 0">
-    <div class="empty-illustration">
-      <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=200&h=200&fit=crop" 
-           alt="Aucun compte" 
-           class="empty-icon">
-    </div>
-    <h3 class="empty-title">Aucun compte bancaire</h3>
-    <p class="empty-description">Commencez par créer votre premier compte pour gérer les finances de vos clients</p>
-    <a routerLink="/compte/add" class="btn-add large">
-      <span class="plus-icon">+</span>
-      <span>Créer un compte</span>
+    <div class="empty-icon">💳</div>
+    <h3>Aucun compte bancaire</h3>
+    <p>Créez votre premier compte pour commencer</p>
+    <a routerLink="/compte/add" class="btn-add">
+      + Créer un compte
     </a>
   </div>
 </div>
