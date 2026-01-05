@@ -1,17 +1,110 @@
 <app-card title="📚 Historique des transactions">
-  <form (ngSubmit)="loadHistorique()">
-    <label>ID Compte: <input type="number" [(ngModel)]="compteId" name="compteId"></label>
-    <label>Début: <input type="date" [(ngModel)]="debut" name="debut"></label>
-    <label>Fin: <input type="date" [(ngModel)]="fin" name="fin"></label>
-    <button type="submit">Rechercher</button>
-  </form>
-  <table>
-    <tr><th>Type</th><th>Montant</th><th>Date</th><th>Compte</th></tr>
-    <tr *ngFor="let h of historique">
-      <td>{{h.type}}</td>
-      <td>{{h.montant}} CFA</td>
-      <td>{{h.dateOperation | date}}</td>
-      <td>{{h.compteId}}</td>
-    </tr>
-  </table>
+  <div class="historique-container">
+    <form (ngSubmit)="loadHistorique()" class="search-form">
+      <div class="form-group">
+        <label for="numeroCompte">Numéro de compte</label>
+        <input 
+          type="text" 
+          id="numeroCompte"
+          placeholder="Saisir le numéro de compte" 
+          [(ngModel)]="numeroCompte" 
+          name="numeroCompte"
+          (blur)="onNumeroCompteChange()"
+          [class.loading]="isLoadingCompte"
+          required>
+        <div *ngIf="isLoadingCompte" class="search-loading">Recherche du compte...</div>
+      </div>
+
+      <div *ngIf="compteInfo" class="account-info-card">
+        <div class="account-info-header">
+          <span class="account-icon">👤</span>
+          <div class="account-info-text">
+            <div class="account-name">{{ compteInfo.clientName }}</div>
+            <div class="account-number">Compte : {{ compteInfo.compteNumero }}</div>
+            <div class="account-solde">Solde : {{ compteInfo.solde | number }} CFA</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="debut">Date début</label>
+          <input 
+            type="date" 
+            id="debut"
+            [(ngModel)]="debut" 
+            name="debut"
+            required>
+        </div>
+
+        <div class="form-group">
+          <label for="fin">Date fin</label>
+          <input 
+            type="date" 
+            id="fin"
+            [(ngModel)]="fin" 
+            name="fin"
+            required>
+        </div>
+      </div>
+
+      <button type="submit" class="search-btn" [disabled]="!compteInfo || isLoading">
+        <span *ngIf="!isLoading">🔍 Rechercher l'historique</span>
+        <span *ngIf="isLoading">Chargement...</span>
+      </button>
+    </form>
+
+    <div *ngIf="historique.length > 0" class="results-section">
+      <div class="results-header">
+        <h3>📋 Résultats ({{ historique.length }} transactions)</h3>
+        <div class="total-amount">
+          Total : {{ getTotal() | number }} CFA
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table class="transactions-table">
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Montant</th>
+              <th>Date</th>
+              <th>Détails</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let h of historique" [class.depot]="h.typeTransaction === 'DEPOT'" 
+                [class.retrait]="h.typeTransaction === 'RETRAIT'" 
+                [class.virement]="h.typeTransaction === 'VIREMENT'">
+              <td>
+                <span class="type-badge" [class]="h.typeTransaction?.toLowerCase()">
+                  {{ getTypeLabel(h.typeTransaction) }}
+                </span>
+              </td>
+              <td class="amount-cell">
+                <span [class]="h.typeTransaction === 'DEPOT' ? 'positive' : 'negative'">
+                  {{ h.montant | number }} CFA
+                </span>
+              </td>
+              <td>{{ h.dateTransaction | date:'dd/MM/yyyy HH:mm' }}</td>
+              <td>
+                <div *ngIf="h.compteDestinataire" class="virement-details">
+                  <small>Vers compte: {{ h.compteDestinataire.numeroCompte }}</small>
+                </div>
+                <div *ngIf="!h.compteDestinataire">
+                  {{ h.compte?.numeroCompte }}
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div *ngIf="historique.length === 0 && !isLoading && compteInfo" class="no-results">
+      <div class="no-results-icon">📊</div>
+      <h3>Aucune transaction trouvée</h3>
+      <p>Veuillez ajuster vos critères de recherche</p>
+    </div>
+  </div>
 </app-card>

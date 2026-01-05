@@ -1,8 +1,72 @@
-<app-card title="📤 Retrait">
-  <form (submit)="retirer(); $event.preventDefault()">
-    <input type="number" placeholder="ID Compte" [(ngModel)]="form.compteId" name="id">
-    <input type="number" placeholder="Montant" [(ngModel)]="form.montant" name="montant">
-    <button>Confirmer retrait</button>
-    <p>{{msg}}</p>
-  </form>
+<app-card title="📤 Retrait d'argent">
+  <div class="transaction-container">
+    <form (submit)="retirer(); $event.preventDefault()" class="transaction-form">
+      <div class="form-group">
+        <label for="numeroCompte">Numéro de compte</label>
+        <input 
+          type="text" 
+          id="numeroCompte"
+          placeholder="Saisir le numéro de compte" 
+          [(ngModel)]="form.numeroCompte" 
+          name="numeroCompte"
+          (blur)="onNumeroCompteChange()"
+          [class.loading]="isLoading"
+          required>
+        <div *ngIf="isLoading" class="search-loading">Recherche en cours...</div>
+      </div>
+
+      <div *ngIf="compteInfo" class="account-details warning">
+        <div class="account-header">
+          <h4>⚠️ Compte à débiter</h4>
+        </div>
+        <div class="details-grid">
+          <div class="detail-item">
+            <span class="detail-label">Propriétaire :</span>
+            <span class="detail-value">{{ compteInfo.clientName }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Numéro de compte :</span>
+            <span class="detail-value">{{ compteInfo.compteNumero }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Type de compte :</span>
+            <span class="detail-value badge">{{ compteInfo.typeCompte }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Solde disponible :</span>
+            <span class="detail-value solde">{{ compteInfo.solde | number }} CFA</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group" *ngIf="compteInfo">
+        <label for="montant">Montant à retirer (CFA)</label>
+        <div class="input-with-preview">
+          <input 
+            type="number" 
+            id="montant"
+            placeholder="Montant à retirer" 
+            [(ngModel)]="form.montant" 
+            name="montant"
+            [max]="compteInfo.solde"
+            min="1"
+            step="100"
+            required>
+          <div class="preview" [class.warning]="form.montant > compteInfo.solde">
+            Nouveau solde : {{ (compteInfo.solde - form.montant) | number }} CFA
+            <span *ngIf="form.montant > compteInfo.solde" class="error-text">(Dépassement)</span>
+          </div>
+        </div>
+      </div>
+
+      <button type="submit" class="submit-btn danger" [disabled]="!compteInfo || isLoading || form.montant > compteInfo.solde">
+        <span *ngIf="!isLoading">💰 Confirmer le retrait</span>
+        <span *ngIf="isLoading">Traitement...</span>
+      </button>
+
+      <div *ngIf="msg" class="message" [class.success]="msg.includes('✅')" [class.error]="msg.includes('❌')">
+        {{ msg }}
+      </div>
+    </form>
+  </div>
 </app-card>

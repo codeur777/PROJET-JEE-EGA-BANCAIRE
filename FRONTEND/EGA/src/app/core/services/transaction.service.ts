@@ -1,31 +1,73 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, map, catchError, of } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Transaction } from '../../shared/models/transaction.model';
+import { CompteService } from './compte.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TransactionService {
-
   private api = `${environment.apiUrl}/transactions`;
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private compteService: CompteService
+  ) {}
 
-  depot(data: any): Observable<any> {
-    return this.http.post(`${this.api}/depot`, data);
+  depot(data: { compteId: number, montant: number }): Observable<any> {
+    return this.http.post(`${this.api}/depot`, data, { responseType: 'text' });
   }
 
-  retrait(data: any): Observable<any> {
-    return this.http.post(`${this.api}/retrait`, data);
+  retrait(data: { compteId: number, montant: number }): Observable<any> {
+    return this.http.post(`${this.api}/retrait`, data, { responseType: 'text' });
   }
 
-  virement(data: any): Observable<any> {
-    return this.http.post(`${this.api}/virement`, data);
+  virement(data: { source: number, destination: number, montant: number }): Observable<any> {
+    return this.http.post(`${this.api}/virement`, data, { responseType: 'text' });
   }
 
   getHistorique(compteId: number, debut: string, fin: string): Observable<Transaction[]> {
-    return this.http.get<Transaction[]>(`${this.api}/historique/${compteId}?debut=${debut}&fin=${fin}`);
+    return this.http.get<Transaction[]>(
+      `${this.api}/historique/${compteId}?debut=${debut}&fin=${fin}`
+    );
+  }
+
+  // Nouvelle méthode pour récupérer les infos client par numéro de compte
+  getClientInfoByNumeroCompte(numeroCompte: string): Observable<any> {
+    // RETIRER LES ESPACES du numéro de compte
+    const numeroSansEspaces = this.sanitizeNumeroCompte(numeroCompte);
+    
+    return this.compteService.getByNumeroWithClient(numeroSansEspaces).pipe(
+      map((compte: any) => ({
+        compteId: compte.id,
+        compteNumero: compte.numeroCompte,
+        compteNumeroFormate: this.formatNumeroCompte(compte.numeroCompte), // Formaté pour affichage
+        clientId: compte.proprietaire?.id,
+        clientName: compte.proprietaire
+          ? `${compte.proprietaire.prenom} ${compte.proprietaire.nom}`
+          : 'Client inconnu',
+        solde: compte.solde,
+        typeCompte: compte.typeCompte
+      })),
+      catchError((error) => {
+        console.error('Erreur lors de la récupération du compte:', error);
+        return of(null);
+      })
+    );
+  }
+
+  // Méthode pour nettoyer le numéro de compte (retirer les espaces)
+  private sanitizeNumeroCompte(numeroCompte: string): string {
+    return numeroCompte.replace(/\s/g, '');
+  }
+
+  // Méthode pour formater le numéro de compte pour l'affichage (ajouter des espaces)
+  private formatNumeroCompte(numeroCompte: string): string {
+    if (!numeroCompte) return '';
+    const cleaned = numeroCompte.replace(/\s/g, '');
+    // Format: FR61 3000 4000 0008 2266 1630 551
+    return cleaned.replace(/(.{4})/g, '$1 ').trim();
   }
 }

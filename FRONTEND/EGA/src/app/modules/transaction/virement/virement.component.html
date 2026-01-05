@@ -1,9 +1,119 @@
 <app-card title="🔁 Virement bancaire">
-  <form (submit)="virer(); $event.preventDefault()">
-    <input type="number" placeholder="Compte source" [(ngModel)]="data.source" name="src">
-    <input type="number" placeholder="Compte destination" [(ngModel)]="data.destination" name="dest">
-    <input type="number" placeholder="Montant" [(ngModel)]="data.montant" name="mont">
-    <button>Envoyer</button>
-    <p>{{result}}</p>
-  </form>
+  <div class="virement-container">
+    <form (submit)="virer(); $event.preventDefault()" class="virement-form">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="sourceNumero">Compte source</label>
+          <input 
+            type="text" 
+            id="sourceNumero"
+            placeholder="Numéro de compte source" 
+            [(ngModel)]="data.sourceNumero" 
+            name="sourceNumero"
+            (blur)="onSourceChange()"
+            [class.loading]="isLoadingSource"
+            required>
+        </div>
+
+        <div class="form-group">
+          <label for="destNumero">Compte destination</label>
+          <input 
+            type="text" 
+            id="destNumero"
+            placeholder="Numéro de compte destination" 
+            [(ngModel)]="data.destNumero" 
+            name="destNumero"
+            (blur)="onDestChange()"
+            [class.loading]="isLoadingDest"
+            required>
+        </div>
+      </div>
+
+      <div class="accounts-info">
+        <div *ngIf="sourceInfo" class="account-card debit">
+          <div class="account-header">
+            <h4>📤 Compte source</h4>
+            <div *ngIf="isLoadingSource" class="loading-spinner"></div>
+          </div>
+          <div class="account-details">
+            <div class="detail">
+              <span class="label">Propriétaire :</span>
+              <span class="value">{{ sourceInfo.clientName }}</span>
+            </div>
+            <div class="detail">
+              <span class="label">Numéro :</span>
+              <span class="value">{{ sourceInfo.compteNumero }}</span>
+            </div>
+            <div class="detail">
+              <span class="label">Solde :</span>
+              <span class="value">{{ sourceInfo.solde | number }} CFA</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="arrow">→</div>
+
+        <div *ngIf="destInfo" class="account-card credit">
+          <div class="account-header">
+            <h4>📥 Compte destination</h4>
+            <div *ngIf="isLoadingDest" class="loading-spinner"></div>
+          </div>
+          <div class="account-details">
+            <div class="detail">
+              <span class="label">Propriétaire :</span>
+              <span class="value">{{ destInfo.clientName }}</span>
+            </div>
+            <div class="detail">
+              <span class="label">Numéro :</span>
+              <span class="value">{{ destInfo.compteNumero }}</span>
+            </div>
+            <div class="detail">
+              <span class="label">Solde :</span>
+              <span class="value">{{ destInfo.solde | number }} CFA</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group amount-group" *ngIf="sourceInfo && destInfo">
+        <label for="montant">Montant du virement (CFA)</label>
+        <div class="input-with-info">
+          <input 
+            type="number" 
+            id="montant"
+            placeholder="Montant à virer" 
+            [(ngModel)]="data.montant" 
+            name="montant"
+            [max]="sourceInfo.solde"
+            min="1"
+            step="100"
+            required>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="info-label">Nouveau solde source :</span>
+              <span class="info-value" [class.warning]="data.montant > sourceInfo.solde">
+                {{ (sourceInfo.solde - data.montant) | number }} CFA
+              </span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Nouveau solde destination :</span>
+              <span class="info-value">
+                {{ (destInfo.solde + data.montant) | number }} CFA
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button type="submit" class="submit-btn transfer" 
+              [disabled]="!sourceInfo || !destInfo || isLoadingSource || isLoadingDest || data.montant > sourceInfo.solde">
+        <span *ngIf="!isLoadingSource && !isLoadingDest">🚀 Effectuer le virement</span>
+        <span *ngIf="isLoadingSource || isLoadingDest">Traitement...</span>
+      </button>
+
+      <div *ngIf="result" class="message" [class.success]="result.includes('✅')" [class.error]="result.includes('❌')">
+        {{ result }}
+      </div>
+    </form>
+  </div>
 </app-card>
