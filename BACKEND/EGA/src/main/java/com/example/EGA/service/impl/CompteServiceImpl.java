@@ -66,21 +66,17 @@ public class CompteServiceImpl implements CompteService {
 
     @Override
     public void deposit(Long id, double amount) {
-        Compte compte = getCompteById(id);
-        transactionService.depot(compte, BigDecimal.valueOf(amount));
+        transactionService.depot(id, amount);
     }
 
     @Override
     public void withdraw(Long id, double amount) {
-        Compte compte = getCompteById(id);
-        transactionService.retrait(compte, BigDecimal.valueOf(amount));
+        transactionService.retrait(id, amount);
     }
 
     @Override
     public void transfer(Long from, Long to, double amount) {
-        Compte source = getCompteById(from);
-        Compte destination = getCompteById(to);
-        transactionService.virement(source, destination, BigDecimal.valueOf(amount));
+        transactionService.virement(from, to, amount);
     }
 
     @Override
@@ -89,10 +85,6 @@ public class CompteServiceImpl implements CompteService {
             LocalDateTime start,
             LocalDateTime end
     ) {
-        Compte compte = getCompteById(id);
-        return transactionService.getTransactionsByCompteAndPeriod(compte, start, end);
+        return transactionService.getTransactionsByCompteAndPeriod(id, start, end);
     }
-
 }
-
-    

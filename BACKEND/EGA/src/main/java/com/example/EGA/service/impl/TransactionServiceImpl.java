@@ -6,21 +6,20 @@ import com.example.EGA.enumerate.TypeTransaction;
 import com.example.EGA.repository.CompteRepository;
 import com.example.EGA.repository.TransactionRepository;
 import com.example.EGA.service.TransactionService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class TransactionServiceImpl implements TransactionService {
 
-    @Autowired
-    private TransactionRepository transactionRepository;
-
-    @Autowired
-    private CompteRepository compteRepository;
+    private final TransactionRepository transactionRepository;
+    private final CompteRepository compteRepository;
 
     @Override
     public List<Transaction> listAll() {
@@ -28,59 +27,76 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public Transaction depot(Compte compte, BigDecimal montant) {
-        compte.setSolde(compte.getSolde().add(montant));
+    @Transactional
+    public void depot(Long compteId, double montant) {
+        Compte compte = compteRepository.findById(compteId)
+                .orElseThrow(() -> new RuntimeException("Compte introuvable"));
+        
+        compte.setSolde(compte.getSolde().add(BigDecimal.valueOf(montant)));
         compteRepository.save(compte);
 
         Transaction t = Transaction.builder()
                 .compte(compte)
                 .typeTransaction(TypeTransaction.DEPOT)
-                .montant(montant)
+                .montant(BigDecimal.valueOf(montant))
                 .build();
-        return transactionRepository.save(t);
+        transactionRepository.save(t);
     }
 
     @Override
-    public Transaction retrait(Compte compte, BigDecimal montant) {
-        if (compte.getSolde().compareTo(montant) < 0) {
+    @Transactional
+    public void retrait(Long compteId, double montant) {
+        Compte compte = compteRepository.findById(compteId)
+                .orElseThrow(() -> new RuntimeException("Compte introuvable"));
+        
+        if (compte.getSolde().compareTo(BigDecimal.valueOf(montant)) < 0) {
             throw new RuntimeException("Solde insuffisant");
         }
-        compte.setSolde(compte.getSolde().subtract(montant));
+        
+        compte.setSolde(compte.getSolde().subtract(BigDecimal.valueOf(montant)));
         compteRepository.save(compte);
 
         Transaction t = Transaction.builder()
                 .compte(compte)
                 .typeTransaction(TypeTransaction.RETRAIT)
-                .montant(montant)
+                .montant(BigDecimal.valueOf(montant))
                 .build();
-        return transactionRepository.save(t);
+        transactionRepository.save(t);
     }
 
     @Override
-    public Transaction virement(Compte source, Compte destination, BigDecimal montant) {
-        if (source.getSolde().compareTo(montant) < 0) {
+    @Transactional
+    public void virement(Long sourceId, Long destinationId, double montant) {
+        Compte source = compteRepository.findById(sourceId)
+                .orElseThrow(() -> new RuntimeException("Compte source introuvable"));
+        Compte destination = compteRepository.findById(destinationId)
+                .orElseThrow(() -> new RuntimeException("Compte destination introuvable"));
+        
+        if (source.getSolde().compareTo(BigDecimal.valueOf(montant)) < 0) {
             throw new RuntimeException("Solde insuffisant pour virement");
         }
+        
         // Retrait du compte source
-        source.setSolde(source.getSolde().subtract(montant));
+        source.setSolde(source.getSolde().subtract(BigDecimal.valueOf(montant)));
         compteRepository.save(source);
 
         // Dépôt sur compte destination
-        destination.setSolde(destination.getSolde().add(montant));
+        destination.setSolde(destination.getSolde().add(BigDecimal.valueOf(montant)));
         compteRepository.save(destination);
 
         Transaction t = Transaction.builder()
                 .compte(source)
                 .compteDestinataire(destination)
                 .typeTransaction(TypeTransaction.VIREMENT)
-                .montant(montant)
+                .montant(BigDecimal.valueOf(montant))
                 .build();
-        return transactionRepository.save(t);
+        transactionRepository.save(t);
     }
 
     @Override
-    public List<Transaction> getTransactionsByCompteAndPeriod(Compte compte, LocalDateTime start, LocalDateTime end) {
+    public List<Transaction> getTransactionsByCompteAndPeriod(Long compteId, LocalDateTime start, LocalDateTime end) {
+        Compte compte = compteRepository.findById(compteId)
+                .orElseThrow(() -> new RuntimeException("Compte introuvable"));
         return transactionRepository.findByCompteAndDateTransactionBetween(compte, start, end);
     }
 }
-

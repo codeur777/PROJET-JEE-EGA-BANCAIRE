@@ -3,6 +3,7 @@ package com.example.EGA.controller;
 import com.example.EGA.dto.CompteDto;
 import com.example.EGA.entity.Compte;
 import com.example.EGA.entity.Transaction;
+import com.example.EGA.repository.CompteRepository;
 import com.example.EGA.service.CompteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -19,18 +20,40 @@ import java.util.List;
 public class CompteController {
 
     private final CompteService compteService;
-
-/* 
-    @PostMapping
-    public Compte create(@RequestBody CompteDto dto) {
-    return compteService.createAccount(dto);
-    }
-
-*/
+    private final CompteRepository compteRepository; // Injection correcte
 
     @GetMapping
     public List<Compte> getAll() {
         return compteService.getAllComptes();
+    }
+
+    @GetMapping("/{id}")
+    public Compte getById(@PathVariable Long id) {
+        return compteService.getCompteById(id);
+    }
+
+    // Nouveau endpoint pour récupérer un compte par son numéro
+    @GetMapping("/by-numero/{numeroCompte}")
+    public ResponseEntity<?> getByNumeroCompte(@PathVariable String numeroCompte) {
+        try {
+            Compte compte = compteRepository.findByNumeroCompte(numeroCompte)
+                    .orElseThrow(() -> new RuntimeException("Compte non trouvé avec le numéro: " + numeroCompte));
+            return ResponseEntity.ok(compte);
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+        }
+    }
+
+    // Nouveau endpoint pour récupérer un compte par son numéro avec le client
+    @GetMapping("/by-numero-with-client/{numeroCompte}")
+    public ResponseEntity<?> getByNumeroWithClient(@PathVariable String numeroCompte) {
+        try {
+            Compte compte = compteRepository.findByNumeroCompteWithClient(numeroCompte)
+                    .orElseThrow(() -> new RuntimeException("Compte non trouvé avec le numéro: " + numeroCompte));
+            return ResponseEntity.ok(compte);
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+        }
     }
 
     @PostMapping("/{id}/deposit/{amount}")
@@ -62,8 +85,6 @@ public class CompteController {
     @PostMapping
     public ResponseEntity<Compte> create(@RequestBody CompteDto dto) {
         Compte compte = compteService.createAccount(dto);
-        return ResponseEntity.ok(compte); // ✅ JSON valide
+        return ResponseEntity.ok(compte);
     }
-
 }
-
