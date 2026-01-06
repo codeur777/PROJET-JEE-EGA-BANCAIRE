@@ -4,6 +4,7 @@ import com.example.EGA.entity.Transaction;
 import com.example.EGA.service.TransactionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,33 +24,33 @@ public class TransactionController {
         return transactionService.listAll();
     }
 
-    @PostMapping("/depot")
+    @PostMapping(value = "/depot", produces = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<String> depot(@RequestBody TransactionRequest request) {
         try {
             transactionService.depot(request.getCompteId(), request.getMontant());
-            return ResponseEntity.ok("Dépôt effectué avec succès !");
+            return ResponseEntity.ok("✅ Dépôt effectué avec succès !");
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body("❌ Erreur : " + e.getMessage());
         }
     }
 
-    @PostMapping("/retrait")
+    @PostMapping(value = "/retrait", produces = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<String> retrait(@RequestBody TransactionRequest request) {
         try {
             transactionService.retrait(request.getCompteId(), request.getMontant());
-            return ResponseEntity.ok("Retrait effectué avec succès !");
+            return ResponseEntity.ok("✅ Retrait effectué avec succès !");
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body("❌ Erreur : " + e.getMessage());
         }
     }
 
-    @PostMapping("/virement")
+    @PostMapping(value = "/virement", produces = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<String> virement(@RequestBody VirementRequest request) {
         try {
             transactionService.virement(request.getSource(), request.getDestination(), request.getMontant());
-            return ResponseEntity.ok("Virement effectué avec succès !");
+            return ResponseEntity.ok("✅ Virement effectué avec succès !");
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body("❌ Erreur : " + e.getMessage());
         }
     }
 
@@ -62,7 +63,7 @@ public class TransactionController {
             List<Transaction> transactions = transactionService.getTransactionsByCompteAndPeriod(compteId, debut, fin);
             return ResponseEntity.ok(transactions);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body("❌ Erreur : " + e.getMessage());
         }
     }
 

@@ -6,18 +6,19 @@
         <input 
           type="text" 
           id="numeroCompte"
-          placeholder="Saisir le numéro de compte" 
+          placeholder="Ex: FR61 3000 4000 0008 2266 1630 551" 
           [(ngModel)]="form.numeroCompte" 
           name="numeroCompte"
           (blur)="onNumeroCompteChange()"
           [class.loading]="isLoading"
+          [disabled]="isSubmitting"
           required>
         <div *ngIf="isLoading" class="search-loading">Recherche en cours...</div>
       </div>
 
       <div *ngIf="compteInfo" class="account-details">
         <div class="account-header">
-          <h4>Informations du compte</h4>
+          <h4>✅ Compte trouvé</h4>
         </div>
         <div class="details-grid">
           <div class="detail-item">
@@ -26,7 +27,7 @@
           </div>
           <div class="detail-item">
             <span class="detail-label">Numéro de compte :</span>
-            <span class="detail-value">{{ compteInfo.compteNumero }}</span>
+            <span class="detail-value">{{ compteInfo.compteNumeroFormate || compteInfo.compteNumero }}</span>
           </div>
           <div class="detail-item">
             <span class="detail-label">Type de compte :</span>
@@ -50,6 +51,7 @@
             name="montant"
             min="1"
             step="100"
+            [disabled]="isSubmitting"
             required>
           <div class="preview">
             Nouveau solde : {{ (compteInfo.solde + form.montant) | number }} CFA
@@ -57,9 +59,11 @@
         </div>
       </div>
 
-      <button type="submit" class="submit-btn" [disabled]="!compteInfo || isLoading">
-        <span *ngIf="!isLoading">💳 Effectuer le dépôt</span>
-        <span *ngIf="isLoading">Traitement...</span>
+      <button type="submit" class="submit-btn" [disabled]="!compteInfo || isLoading || isSubmitting || form.montant <= 0">
+        <span *ngIf="!isSubmitting">💳 Effectuer le dépôt</span>
+        <span *ngIf="isSubmitting">
+          <span class="spinner"></span> Traitement en cours...
+        </span>
       </button>
 
       <div *ngIf="message" class="message" [class.success]="message.includes('✅')" [class.error]="message.includes('❌')">

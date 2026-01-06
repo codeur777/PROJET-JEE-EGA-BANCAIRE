@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, map, catchError, of } from 'rxjs';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Observable, map, catchError, of, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Transaction } from '../../shared/models/transaction.model';
 import { CompteService } from './compte.service';
@@ -17,15 +17,33 @@ export class TransactionService {
   ) {}
 
   depot(data: { compteId: number, montant: number }): Observable<any> {
-    return this.http.post(`${this.api}/depot`, data, { responseType: 'text' });
+    return this.http.post(`${this.api}/depot`, data, { 
+      responseType: 'text',
+      observe: 'response'
+    }).pipe(
+      map(response => response.body),
+      catchError(this.handleError)
+    );
   }
 
   retrait(data: { compteId: number, montant: number }): Observable<any> {
-    return this.http.post(`${this.api}/retrait`, data, { responseType: 'text' });
+    return this.http.post(`${this.api}/retrait`, data, { 
+      responseType: 'text',
+      observe: 'response'
+    }).pipe(
+      map(response => response.body),
+      catchError(this.handleError)
+    );
   }
 
   virement(data: { source: number, destination: number, montant: number }): Observable<any> {
-    return this.http.post(`${this.api}/virement`, data, { responseType: 'text' });
+    return this.http.post(`${this.api}/virement`, data, { 
+      responseType: 'text',
+      observe: 'response'
+    }).pipe(
+      map(response => response.body),
+      catchError(this.handleError)
+    );
   }
 
   getHistorique(compteId: number, debut: string, fin: string): Observable<Transaction[]> {
@@ -69,5 +87,23 @@ export class TransactionService {
     const cleaned = numeroCompte.replace(/\s/g, '');
     // Format: FR61 3000 4000 0008 2266 1630 551
     return cleaned.replace(/(.{4})/g, '$1 ').trim();
+  }
+
+  // Gestionnaire d'erreurs amélioré
+  private handleError(error: HttpErrorResponse) {
+    let errorMessage = 'Une erreur est survenue';
+    
+    if (error.status === 0) {
+      // Erreur réseau
+      errorMessage = 'Erreur de connexion au serveur';
+    } else if (error.error instanceof ErrorEvent) {
+      // Erreur côté client
+      errorMessage = error.error.message;
+    } else {
+      // Erreur côté serveur
+      errorMessage = error.error || `Code d'erreur: ${error.status}`;
+    }
+    
+    return throwError(() => new Error(errorMessage));
   }
 }

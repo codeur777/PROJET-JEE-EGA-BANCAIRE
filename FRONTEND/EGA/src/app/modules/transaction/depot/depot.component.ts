@@ -15,6 +15,7 @@ export class DepotComponent {
   compteInfo: any = null;
   message = '';
   isLoading = false;
+  isSubmitting = false;
 
   constructor(private txService: TransactionService) {}
 
@@ -60,17 +61,26 @@ export class DepotComponent {
       montant: this.form.montant
     };
 
-    this.isLoading = true;
+    this.isSubmitting = true;
+    this.message = '';
+    
     this.txService.depot(transactionData).subscribe({
       next: (response: string) => {
-        this.message = "✅ " + response;
+        this.message = response;
         this.form.montant = 0;
-        this.isLoading = false;
-        setTimeout(() => this.message = '', 3000);
+        this.isSubmitting = false;
+        
+        // Mettre à jour le solde affiché
+        if (this.compteInfo) {
+          this.compteInfo.solde += transactionData.montant;
+        }
+        
+        setTimeout(() => this.message = '', 5000);
       },
       error: (err) => {
-        this.message = "❌ Erreur : " + (err.error || 'Veuillez réessayer');
-        this.isLoading = false;
+        this.message = "❌ Erreur : " + err.message;
+        this.isSubmitting = false;
+        setTimeout(() => this.message = '', 5000);
       }
     });
   }

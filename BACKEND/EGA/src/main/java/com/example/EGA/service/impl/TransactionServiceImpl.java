@@ -29,6 +29,10 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     @Transactional
     public void depot(Long compteId, double montant) {
+        if (montant <= 0) {
+            throw new RuntimeException("Le montant doit être supérieur à 0");
+        }
+        
         Compte compte = compteRepository.findById(compteId)
                 .orElseThrow(() -> new RuntimeException("Compte introuvable"));
         
@@ -46,11 +50,15 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     @Transactional
     public void retrait(Long compteId, double montant) {
+        if (montant <= 0) {
+            throw new RuntimeException("Le montant doit être supérieur à 0");
+        }
+        
         Compte compte = compteRepository.findById(compteId)
                 .orElseThrow(() -> new RuntimeException("Compte introuvable"));
         
         if (compte.getSolde().compareTo(BigDecimal.valueOf(montant)) < 0) {
-            throw new RuntimeException("Solde insuffisant");
+            throw new RuntimeException("Solde insuffisant. Solde disponible : " + compte.getSolde() + " CFA");
         }
         
         compte.setSolde(compte.getSolde().subtract(BigDecimal.valueOf(montant)));
@@ -67,13 +75,21 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     @Transactional
     public void virement(Long sourceId, Long destinationId, double montant) {
+        if (montant <= 0) {
+            throw new RuntimeException("Le montant doit être supérieur à 0");
+        }
+        
+        if (sourceId.equals(destinationId)) {
+            throw new RuntimeException("Les comptes source et destination doivent être différents");
+        }
+        
         Compte source = compteRepository.findById(sourceId)
                 .orElseThrow(() -> new RuntimeException("Compte source introuvable"));
         Compte destination = compteRepository.findById(destinationId)
                 .orElseThrow(() -> new RuntimeException("Compte destination introuvable"));
         
         if (source.getSolde().compareTo(BigDecimal.valueOf(montant)) < 0) {
-            throw new RuntimeException("Solde insuffisant pour virement");
+            throw new RuntimeException("Solde insuffisant sur le compte source. Solde disponible : " + source.getSolde() + " CFA");
         }
         
         // Retrait du compte source
