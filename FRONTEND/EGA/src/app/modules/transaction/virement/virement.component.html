@@ -7,12 +7,13 @@
           <input 
             type="text" 
             id="sourceNumero"
-            placeholder="Numéro de compte source" 
+            placeholder="Ex: FR61 3000 4000 0008 2266 1630 551" 
             [(ngModel)]="data.sourceNumero" 
             name="sourceNumero"
             (blur)="onSourceChange()"
             [class.loading]="isLoadingSource"
             required>
+          <div *ngIf="isLoadingSource" class="search-loading">Recherche en cours...</div>
         </div>
 
         <div class="form-group">
@@ -20,56 +21,68 @@
           <input 
             type="text" 
             id="destNumero"
-            placeholder="Numéro de compte destination" 
+            placeholder="Ex: FR61 3000 4000 0008 2266 1630 552" 
             [(ngModel)]="data.destNumero" 
             name="destNumero"
             (blur)="onDestChange()"
             [class.loading]="isLoadingDest"
             required>
+          <div *ngIf="isLoadingDest" class="search-loading">Recherche en cours...</div>
         </div>
       </div>
 
-      <div class="accounts-info">
-        <div *ngIf="sourceInfo" class="account-card debit">
+      <div class="accounts-grid">
+        <div *ngIf="sourceInfo" class="account-card blue">
           <div class="account-header">
             <h4>📤 Compte source</h4>
             <div *ngIf="isLoadingSource" class="loading-spinner"></div>
           </div>
-          <div class="account-details">
-            <div class="detail">
-              <span class="label">Propriétaire :</span>
-              <span class="value">{{ sourceInfo.clientName }}</span>
+          <div class="account-details-grid">
+            <div class="detail-item">
+              <span class="detail-label">Propriétaire :</span>
+              <span class="detail-value">{{ sourceInfo.clientName }}</span>
             </div>
-            <div class="detail">
-              <span class="label">Numéro :</span>
-              <span class="value">{{ sourceInfo.compteNumero }}</span>
+            <div class="detail-item">
+              <span class="detail-label">Numéro de compte :</span>
+              <span class="detail-value">{{ sourceInfo.compteNumeroFormate || sourceInfo.compteNumero }}</span>
             </div>
-            <div class="detail">
-              <span class="label">Solde :</span>
-              <span class="value">{{ sourceInfo.solde | number }} CFA</span>
+            <div class="detail-item">
+              <span class="detail-label">Type de compte :</span>
+              <span class="detail-value badge">{{ sourceInfo.typeCompte }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Solde actuel :</span>
+              <span class="detail-value solde">{{ sourceInfo.solde | number }} CFA</span>
             </div>
           </div>
         </div>
 
-        <div class="arrow">→</div>
+        <div class="arrow-container" *ngIf="sourceInfo || destInfo">
+          <div class="arrow">→</div>
+          <div class="arrow-label">Virement</div>
+        </div>
 
-        <div *ngIf="destInfo" class="account-card credit">
+        <div *ngIf="destInfo" class="account-card blue">
           <div class="account-header">
             <h4>📥 Compte destination</h4>
             <div *ngIf="isLoadingDest" class="loading-spinner"></div>
           </div>
-          <div class="account-details">
-            <div class="detail">
-              <span class="label">Propriétaire :</span>
-              <span class="value">{{ destInfo.clientName }}</span>
+          <div class="account-details-grid">
+            <div class="detail-item">
+              <span class="detail-label">Propriétaire :</span>
+              <span class="detail-value">{{ destInfo.clientName }}</span>
             </div>
-            <div class="detail">
-              <span class="label">Numéro :</span>
-              <span class="value">{{ destInfo.compteNumero }}</span>
+            <div class="detail-item">
+              <span class="detail-label">Numéro de compte :</span>
+              <span class="detail-value">{{ destInfo.compteNumeroFormate || destInfo.compteNumero }}</span>
             </div>
-            <div class="detail">
-              <span class="label">Solde :</span>
-              <span class="value">{{ destInfo.solde | number }} CFA</span>
+            <div class="detail-item">
+              <span class="detail-label">Type de compte :</span>
+              <span class="detail-value badge">{{ destInfo.typeCompte }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Solde actuel :</span>
+              <span class="detail-value solde">{{ destInfo.solde | number }} CFA</span>
             </div>
           </div>
         </div>
@@ -91,13 +104,13 @@
           <div class="info-grid">
             <div class="info-item">
               <span class="info-label">Nouveau solde source :</span>
-              <span class="info-value" [class.warning]="data.montant > sourceInfo.solde">
+              <span class="info-value" [class.error]="data.montant > sourceInfo.solde">
                 {{ (sourceInfo.solde - data.montant) | number }} CFA
               </span>
             </div>
             <div class="info-item">
               <span class="info-label">Nouveau solde destination :</span>
-              <span class="info-value">
+              <span class="info-value success">
                 {{ (destInfo.solde + data.montant) | number }} CFA
               </span>
             </div>
@@ -106,9 +119,10 @@
       </div>
 
       <button type="submit" class="submit-btn transfer" 
-              [disabled]="!sourceInfo || !destInfo || isLoadingSource || isLoadingDest || data.montant > sourceInfo.solde">
+              [disabled]="!sourceInfo || !destInfo || isLoadingSource || isLoadingDest || 
+                         data.montant <= 0 || data.montant > sourceInfo.solde">
         <span *ngIf="!isLoadingSource && !isLoadingDest">🚀 Effectuer le virement</span>
-        <span *ngIf="isLoadingSource || isLoadingDest">Traitement...</span>
+        <span *ngIf="isLoadingSource || isLoadingDest">Traitement en cours...</span>
       </button>
 
       <div *ngIf="result" class="message" [class.success]="result.includes('✅')" [class.error]="result.includes('❌')">

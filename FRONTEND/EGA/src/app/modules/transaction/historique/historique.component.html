@@ -1,64 +1,178 @@
-<app-card title="📚 Historique des transactions">
+ <app-card title="📊 Historique des transactions">
   <div class="historique-container">
-    <form (ngSubmit)="loadHistorique()" class="search-form">
-      <div class="form-group">
-        <label for="numeroCompte">Numéro de compte</label>
-        <input 
-          type="text" 
-          id="numeroCompte"
-          placeholder="Saisir le numéro de compte" 
-          [(ngModel)]="numeroCompte" 
-          name="numeroCompte"
-          (blur)="onNumeroCompteChange()"
-          [class.loading]="isLoadingCompte"
-          required>
-        <div *ngIf="isLoadingCompte" class="search-loading">Recherche du compte...</div>
+    <!-- Section Recherche -->
+    <div class="search-section">
+      <div class="search-header">
+        <h3><i class="icon">🔍</i> Recherche d'historique</h3>
+        <p class="search-subtitle">Consultez l'historique des transactions d'un compte</p>
       </div>
+      
+      <div class="search-form">
+        <div class="form-group">
+          <label for="numeroCompte">Numéro de compte</label>
+          <div class="input-with-button">
+            <input 
+              type="text" 
+              id="numeroCompte"
+              placeholder="Entrez le numéro de compte" 
+              [(ngModel)]="numeroCompte" 
+              name="numeroCompte"
+              (blur)="onNumeroCompteChange()"
+              [class.loading]="isLoadingCompte"
+              required>
+            <button type="button" class="search-btn" (click)="onNumeroCompteChange()" [disabled]="isLoadingCompte">
+              <i class="icon">🔍</i>
+            </button>
+          </div>
+          <div *ngIf="isLoadingCompte" class="loading-state">
+            <div class="spinner"></div>
+            <span>Recherche du compte...</span>
+          </div>
+        </div>
 
-      <div *ngIf="compteInfo" class="account-info-card">
-        <div class="account-info-header">
-          <span class="account-icon">👤</span>
-          <div class="account-info-text">
-            <div class="account-name">{{ compteInfo.clientName }}</div>
-            <div class="account-number">Compte : {{ compteInfo.compteNumero }}</div>
-            <div class="account-solde">Solde : {{ compteInfo.solde | number }} CFA</div>
+        <div *ngIf="compteInfo" class="account-info">
+          <div class="account-card-mini">
+            <div class="account-header-mini">
+              <div class="client-avatar-mini">
+                <i class="icon">👤</i>
+              </div>
+              <div class="client-info-mini">
+                <h4>{{ compteInfo.clientName }}</h4>
+                <p class="account-number-mini">{{ compteInfo.compteNumeroFormate || compteInfo.compteNumero }}</p>
+              </div>
+              <div class="account-balance-mini">
+                <span class="balance-label">Solde</span>
+                <span class="balance-amount">{{ compteInfo.solde | number }} CFA</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="date-range">
+          <div class="form-group">
+            <label for="debut">Date début</label>
+            <input 
+              type="date" 
+              id="debut"
+              [(ngModel)]="debut" 
+              name="debut"
+              required>
+          </div>
+
+          <div class="form-group">
+            <label for="fin">Date fin</label>
+            <input 
+              type="date" 
+              id="fin"
+              [(ngModel)]="fin" 
+              name="fin"
+              required>
+          </div>
+        </div>
+
+        <button type="button" class="submit-btn primary" (click)="loadHistorique()" [disabled]="!compteInfo || isLoading">
+          <span *ngIf="!isLoading">
+            <i class="icon">📊</i> Charger l'historique
+          </span>
+          <span *ngIf="isLoading">
+            <div class="spinner white"></div> Chargement...
+          </span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Section Filtres -->
+    <div *ngIf="historique.length > 0" class="filters-section">
+      <div class="filters-header">
+        <h3>Filtres et statistiques</h3>
+      </div>
+      
+      <div class="stats-cards">
+        <div class="stat-card total">
+          <div class="stat-icon">
+            <i class="icon">📈</i>
+          </div>
+          <div class="stat-info">
+            <div class="stat-label">Total transactions</div>
+            <div class="stat-value">{{ filteredHistorique.length }}</div>
+          </div>
+        </div>
+        
+        <div class="stat-card depot">
+          <div class="stat-icon">
+            <i class="icon">📥</i>
+          </div>
+          <div class="stat-info">
+            <div class="stat-label">Total dépôts</div>
+            <div class="stat-value">{{ getDepotTotal() | number }} CFA</div>
+          </div>
+        </div>
+        
+        <div class="stat-card retrait">
+          <div class="stat-icon">
+            <i class="icon">📤</i>
+          </div>
+          <div class="stat-info">
+            <div class="stat-label">Total retraits</div>
+            <div class="stat-value">{{ getRetraitTotal() | number }} CFA</div>
+          </div>
+        </div>
+        
+        <div class="stat-card balance">
+          <div class="stat-icon">
+            <i class="icon">💰</i>
+          </div>
+          <div class="stat-info">
+            <div class="stat-label">Solde net</div>
+            <div class="stat-value">{{ getTotal() | number }} CFA</div>
           </div>
         </div>
       </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label for="debut">Date début</label>
-          <input 
-            type="date" 
-            id="debut"
-            [(ngModel)]="debut" 
-            name="debut"
-            required>
+      
+      <div class="filters-controls">
+        <div class="filter-group">
+          <label for="filterType">Type de transaction</label>
+          <select id="filterType" [(ngModel)]="filterType" (change)="applyFilters()">
+            <option value="TOUS">Tous les types</option>
+            <option value="DEPOT">Dépôts</option>
+            <option value="RETRAIT">Retraits</option>
+            <option value="VIREMENT">Virements</option>
+          </select>
         </div>
-
-        <div class="form-group">
-          <label for="fin">Date fin</label>
+        
+        <div class="filter-group">
+          <label for="searchText">Recherche</label>
           <input 
-            type="date" 
-            id="fin"
-            [(ngModel)]="fin" 
-            name="fin"
-            required>
+            type="text" 
+            id="searchText"
+            placeholder="Rechercher par numéro ou montant..." 
+            [(ngModel)]="searchText"
+            (input)="applyFilters()">
+        </div>
+        
+        <div class="filter-group">
+          <label for="itemsPerPage">Éléments par page</label>
+          <select id="itemsPerPage" [(ngModel)]="itemsPerPage" (change)="applyFilters()">
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+          </select>
         </div>
       </div>
+    </div>
 
-      <button type="submit" class="search-btn" [disabled]="!compteInfo || isLoading">
-        <span *ngIf="!isLoading">🔍 Rechercher l'historique</span>
-        <span *ngIf="isLoading">Chargement...</span>
-      </button>
-    </form>
-
-    <div *ngIf="historique.length > 0" class="results-section">
+    <!-- Section Résultats -->
+    <div *ngIf="filteredHistorique.length > 0" class="results-section">
       <div class="results-header">
-        <h3>📋 Résultats ({{ historique.length }} transactions)</h3>
-        <div class="total-amount">
-          Total : {{ getTotal() | number }} CFA
+        <h3>Transactions ({{ filteredHistorique.length }})</h3>
+        <div class="export-actions">
+          <button class="export-btn">
+            <i class="icon">📥</i> Exporter PDF
+          </button>
+          <button class="export-btn">
+            <i class="icon">📄</i> Exporter CSV
+          </button>
         </div>
       </div>
 
@@ -67,44 +181,110 @@
           <thead>
             <tr>
               <th>Type</th>
-              <th>Montant</th>
               <th>Date</th>
-              <th>Détails</th>
+              <th>Description</th>
+              <th>Compte</th>
+              <th>Montant</th>
+              <th>Statut</th>
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let h of historique" [class.depot]="h.typeTransaction === 'DEPOT'" 
-                [class.retrait]="h.typeTransaction === 'RETRAIT'" 
-                [class.virement]="h.typeTransaction === 'VIREMENT'">
-              <td>
+            <tr *ngFor="let h of paginatedHistorique" [class]="h.typeTransaction?.toLowerCase()">
+              <td class="type-cell">
                 <span class="type-badge" [class]="h.typeTransaction?.toLowerCase()">
+                  <i class="icon">{{ getTypeIcon(h.typeTransaction) }}</i>
                   {{ getTypeLabel(h.typeTransaction) }}
                 </span>
               </td>
-              <td class="amount-cell">
-                <span [class]="h.typeTransaction === 'DEPOT' ? 'positive' : 'negative'">
-                  {{ h.montant | number }} CFA
-                </span>
+              <td class="date-cell">
+                {{ h.dateTransaction | date:'dd/MM/yyyy' }}<br>
+                <small>{{ h.dateTransaction | date:'HH:mm' }}</small>
               </td>
-              <td>{{ h.dateTransaction | date:'dd/MM/yyyy HH:mm' }}</td>
-              <td>
-                <div *ngIf="h.compteDestinataire" class="virement-details">
-                  <small>Vers compte: {{ h.compteDestinataire.numeroCompte }}</small>
+              <td class="description-cell">
+                <div class="description">
+                  <strong>{{ getTypeLabel(h.typeTransaction) }}</strong>
+                  <div *ngIf="h.compteDestinataire" class="transfer-details">
+                    <small>Vers: {{ h.compteDestinataire.numeroCompte }}</small>
+                  </div>
+                  <div *ngIf="!h.compteDestinataire">
+                    <small>Compte: {{ h.compte?.numeroCompte }}</small>
+                  </div>
+                </div>
+              </td>
+              <td class="account-cell">
+                <div *ngIf="h.compteDestinataire">
+                  <div class="account-from">{{ h.compte?.numeroCompte }}</div>
+                  <div class="account-to">{{ h.compteDestinataire.numeroCompte }}</div>
                 </div>
                 <div *ngIf="!h.compteDestinataire">
                   {{ h.compte?.numeroCompte }}
                 </div>
               </td>
+              <td class="amount-cell" [class]="h.typeTransaction === 'DEPOT' ? 'positive' : 'negative'">
+                <div class="amount">
+                  {{ h.montant | number }} CFA
+                </div>
+                <div class="amount-change" *ngIf="h.typeTransaction === 'DEPOT'">
+                  <i class="icon">↗</i> Entrée
+                </div>
+                <div class="amount-change" *ngIf="h.typeTransaction === 'RETRAIT'">
+                  <i class="icon">↘</i> Sortie
+                </div>
+              </td>
+              <td class="status-cell">
+                <span class="status-badge completed">● Terminé</span>
+              </td>
             </tr>
           </tbody>
         </table>
       </div>
+
+      <!-- Pagination -->
+      <div class="pagination" *ngIf="totalPages > 1">
+        <button class="page-btn" (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">
+          <i class="icon">←</i> Précédent
+        </button>
+        
+        <div class="page-numbers">
+          <span class="page-info">
+            Page {{ currentPage }} sur {{ totalPages }}
+          </span>
+          <div class="page-dots">
+            <span *ngFor="let page of [].constructor(totalPages); let i = index"
+                  class="page-dot" 
+                  [class.active]="currentPage === i + 1"
+                  (click)="changePage(i + 1)">
+            </span>
+          </div>
+        </div>
+        
+        <button class="page-btn" (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages">
+          Suivant <i class="icon">→</i>
+        </button>
+      </div>
     </div>
 
-    <div *ngIf="historique.length === 0 && !isLoading && compteInfo" class="no-results">
-      <div class="no-results-icon">📊</div>
-      <h3>Aucune transaction trouvée</h3>
-      <p>Veuillez ajuster vos critères de recherche</p>
+    <!-- Message Aucun résultat -->
+    <div *ngIf="historique.length === 0 && compteInfo && !isLoading" class="no-results">
+      <div class="no-results-content">
+        <div class="no-results-icon">
+          <i class="icon">📊</i>
+        </div>
+        <h3>Aucune transaction trouvée</h3>
+        <p>Aucune transaction n'a été effectuée sur ce compte pendant la période sélectionnée.</p>
+        <button class="retry-btn" (click)="loadHistorique()">
+          <i class="icon">🔄</i> Réessayer avec d'autres dates
+        </button>
+      </div>
+    </div>
+
+    <!-- Message Chargement -->
+    <div *ngIf="isLoading" class="loading-overlay">
+      <div class="loading-content">
+        <div class="spinner large"></div>
+        <h3>Chargement de l'historique...</h3>
+        <p>Veuillez patienter pendant le traitement des données.</p>
+      </div>
     </div>
   </div>
 </app-card>

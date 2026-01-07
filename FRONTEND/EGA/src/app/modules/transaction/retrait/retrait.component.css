@@ -1,5 +1,5 @@
 .transaction-container {
-  max-width: 500px;
+  max-width: 600px;
   margin: 0 auto;
   padding: 20px;
 }
@@ -7,7 +7,7 @@
 .transaction-form {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 25px;
 }
 
 .form-group {
@@ -23,7 +23,7 @@
 }
 
 .form-group input {
-  padding: 12px 16px;
+  padding: 14px 16px;
   border: 2px solid #e1e5e9;
   border-radius: 8px;
   font-size: 16px;
@@ -38,32 +38,127 @@
   box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
 }
 
-.client-info.warning {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-  padding: 15px;
-  border-radius: 8px;
-  color: white;
+.form-group input.loading {
+  background: #f0f7ff;
+  border-color: #e74c3c;
+}
+
+.search-loading {
+  font-size: 14px;
+  color: #e74c3c;
+  margin-top: 5px;
   display: flex;
-  flex-direction: column;
-  gap: 5px;
+  align-items: center;
+  gap: 8px;
+}
+
+.search-loading::before {
+  content: "";
+  width: 16px;
+  height: 16px;
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #e74c3c;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* Carte bleue */
+.account-details.blue {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+  border-radius: 12px;
+  color: white;
   animation: slideIn 0.3s ease;
 }
 
-.client-label {
-  font-size: 12px;
-  opacity: 0.9;
-}
-
-.client-name {
-  font-size: 18px;
-  font-weight: bold;
-}
-
-.submit-btn.danger {
+.account-details.warning {
   background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  padding: 20px;
+  border-radius: 12px;
+  color: white;
+  animation: slideIn 0.3s ease;
+}
+
+.account-header {
+  margin-bottom: 15px;
+}
+
+.account-header h4 {
+  margin: 0;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.details-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.detail-label {
+  font-size: 12px;
+  opacity: 0.8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.detail-value {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.detail-value.solde {
+  font-size: 18px;
+  color: #4ade80;
+}
+
+.badge {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  display: inline-block;
+}
+
+.input-with-preview {
+  position: relative;
+}
+
+.preview {
+  margin-top: 8px;
+  padding: 10px;
+  background: #f0f7ff;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #e74c3c;
+  border: 1px solid #ffd1d1;
+  font-weight: 500;
+}
+
+.preview.error {
+  background: #ffebee;
+  color: #c62828;
+  border-color: #ffcdd2;
+}
+
+.error-text {
+  font-weight: bold;
+  margin-left: 10px;
+}
+
+.submit-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border: none;
-  padding: 14px 24px;
+  padding: 16px 24px;
   border-radius: 8px;
   font-size: 16px;
   font-weight: 600;
@@ -72,12 +167,20 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 10px;
   margin-top: 10px;
 }
 
-.submit-btn.danger:hover:not(:disabled) {
+.submit-btn.danger {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.submit-btn:hover:not(:disabled) {
   transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.submit-btn.danger:hover:not(:disabled) {
   box-shadow: 0 6px 20px rgba(245, 87, 108, 0.4);
 }
 
@@ -87,10 +190,11 @@
 }
 
 .message {
-  padding: 12px 16px;
+  padding: 15px 20px;
   border-radius: 8px;
   margin-top: 15px;
   font-weight: 500;
+  text-align: center;
   animation: fadeIn 0.3s ease;
 }
 
@@ -104,6 +208,11 @@
   background: #f8d7da;
   color: #721c24;
   border: 1px solid #f5c6cb;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 @keyframes slideIn {

@@ -6,7 +6,7 @@
         <input 
           type="text" 
           id="numeroCompte"
-          placeholder="Saisir le numéro de compte" 
+          placeholder="Ex: FR61 3000 4000 0008 2266 1630 551" 
           [(ngModel)]="form.numeroCompte" 
           name="numeroCompte"
           (blur)="onNumeroCompteChange()"
@@ -15,9 +15,9 @@
         <div *ngIf="isLoading" class="search-loading">Recherche en cours...</div>
       </div>
 
-      <div *ngIf="compteInfo" class="account-details warning">
+      <div *ngIf="compteInfo" class="account-details blue">
         <div class="account-header">
-          <h4>⚠️ Compte à débiter</h4>
+          <h4>✅ Compte trouvé</h4>
         </div>
         <div class="details-grid">
           <div class="detail-item">
@@ -26,14 +26,14 @@
           </div>
           <div class="detail-item">
             <span class="detail-label">Numéro de compte :</span>
-            <span class="detail-value">{{ compteInfo.compteNumero }}</span>
+            <span class="detail-value">{{ compteInfo.compteNumeroFormate || compteInfo.compteNumero }}</span>
           </div>
           <div class="detail-item">
             <span class="detail-label">Type de compte :</span>
             <span class="detail-value badge">{{ compteInfo.typeCompte }}</span>
           </div>
           <div class="detail-item">
-            <span class="detail-label">Solde disponible :</span>
+            <span class="detail-label">Solde actuel :</span>
             <span class="detail-value solde">{{ compteInfo.solde | number }} CFA</span>
           </div>
         </div>
@@ -48,20 +48,20 @@
             placeholder="Montant à retirer" 
             [(ngModel)]="form.montant" 
             name="montant"
-            [max]="compteInfo.solde"
             min="1"
+            [max]="compteInfo.solde"
             step="100"
             required>
-          <div class="preview" [class.warning]="form.montant > compteInfo.solde">
+          <div class="preview" [class.error]="form.montant > compteInfo.solde">
             Nouveau solde : {{ (compteInfo.solde - form.montant) | number }} CFA
-            <span *ngIf="form.montant > compteInfo.solde" class="error-text">(Dépassement)</span>
+            <span *ngIf="form.montant > compteInfo.solde" class="error-text">(Solde insuffisant)</span>
           </div>
         </div>
       </div>
 
-      <button type="submit" class="submit-btn danger" [disabled]="!compteInfo || isLoading || form.montant > compteInfo.solde">
-        <span *ngIf="!isLoading">💰 Confirmer le retrait</span>
-        <span *ngIf="isLoading">Traitement...</span>
+      <button type="submit" class="submit-btn danger" [disabled]="!compteInfo || isLoading || form.montant <= 0 || form.montant > compteInfo.solde">
+        <span *ngIf="!isLoading">💰 Effectuer le retrait</span>
+        <span *ngIf="isLoading">Traitement en cours...</span>
       </button>
 
       <div *ngIf="msg" class="message" [class.success]="msg.includes('✅')" [class.error]="msg.includes('❌')">

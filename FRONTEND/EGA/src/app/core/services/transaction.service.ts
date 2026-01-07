@@ -76,6 +76,7 @@ export class TransactionService {
     );
   }
 
+  
   // Méthode pour nettoyer le numéro de compte (retirer les espaces)
   private sanitizeNumeroCompte(numeroCompte: string): string {
     return numeroCompte.replace(/\s/g, '');
