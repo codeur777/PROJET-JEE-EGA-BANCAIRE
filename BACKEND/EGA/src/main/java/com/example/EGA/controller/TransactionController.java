@@ -8,6 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -22,6 +23,24 @@ public class TransactionController {
     @GetMapping
     public List<Transaction> list() {
         return transactionService.listAll();
+    }
+
+    @GetMapping("/historique/{compteId}")
+    public ResponseEntity<?> getHistorique(
+            @PathVariable Long compteId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate debut,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fin) {
+        try {
+            System.out.println("Début: " + debut + ", Fin: " + fin); // Log pour debug
+            LocalDateTime start = debut.atStartOfDay();
+            LocalDateTime end = fin.atTime(23, 59, 59);
+            List<Transaction> transactions = transactionService.getTransactionsByCompteAndPeriod(compteId, start, end);
+            System.out.println("Transactions trouvées: " + transactions.size()); // Log pour debug
+            return ResponseEntity.ok(transactions);
+        } catch (Exception e) {
+            e.printStackTrace(); // Log l'exception
+            return ResponseEntity.badRequest().body("❌ Erreur : " + e.getMessage());
+        }
     }
 
     @PostMapping(value = "/depot", produces = MediaType.TEXT_PLAIN_VALUE)
@@ -49,19 +68,6 @@ public class TransactionController {
         try {
             transactionService.virement(request.getSource(), request.getDestination(), request.getMontant());
             return ResponseEntity.ok("✅ Virement effectué avec succès !");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("❌ Erreur : " + e.getMessage());
-        }
-    }
-
-    @GetMapping("/historique/{compteId}")
-    public ResponseEntity<?> getHistorique(
-            @PathVariable Long compteId,
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime debut,
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime fin) {
-        try {
-            List<Transaction> transactions = transactionService.getTransactionsByCompteAndPeriod(compteId, debut, fin);
-            return ResponseEntity.ok(transactions);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("❌ Erreur : " + e.getMessage());
         }

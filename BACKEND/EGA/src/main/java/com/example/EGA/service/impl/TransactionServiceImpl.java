@@ -43,6 +43,7 @@ public class TransactionServiceImpl implements TransactionService {
                 .compte(compte)
                 .typeTransaction(TypeTransaction.DEPOT)
                 .montant(BigDecimal.valueOf(montant))
+                .dateTransaction(LocalDateTime.now()) // Ajoutez cette ligne
                 .build();
         transactionRepository.save(t);
     }
@@ -68,6 +69,7 @@ public class TransactionServiceImpl implements TransactionService {
                 .compte(compte)
                 .typeTransaction(TypeTransaction.RETRAIT)
                 .montant(BigDecimal.valueOf(montant))
+                .dateTransaction(LocalDateTime.now()) // Ajoutez cette ligne
                 .build();
         transactionRepository.save(t);
     }
@@ -105,14 +107,22 @@ public class TransactionServiceImpl implements TransactionService {
                 .compteDestinataire(destination)
                 .typeTransaction(TypeTransaction.VIREMENT)
                 .montant(BigDecimal.valueOf(montant))
+                .dateTransaction(LocalDateTime.now()) // Ajoutez cette ligne
                 .build();
         transactionRepository.save(t);
     }
 
     @Override
     public List<Transaction> getTransactionsByCompteAndPeriod(Long compteId, LocalDateTime start, LocalDateTime end) {
+        System.out.println("Recherche transactions pour compte: " + compteId);
+        System.out.println("Période: " + start + " à " + end);
+        
         Compte compte = compteRepository.findById(compteId)
                 .orElseThrow(() -> new RuntimeException("Compte introuvable"));
-        return transactionRepository.findByCompteAndDateTransactionBetween(compte, start, end);
+        
+        List<Transaction> transactions = transactionRepository.findByCompteAndDateTransactionBetween(compte, start, end);
+        System.out.println("Nombre de transactions trouvées: " + transactions.size());
+        
+        return transactions;
     }
 }

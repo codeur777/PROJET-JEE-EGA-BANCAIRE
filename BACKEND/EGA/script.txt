@@ -1,0 +1,84 @@
+CREATE DATABASE ega_bank
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_general_ci;
+
+USE ega_bank;
+
+CREATE USER 'ega_user'@'localhost' IDENTIFIED BY 'ega1234';
+GRANT ALL PRIVILEGES ON ega_bank.* TO 'ega_user'@'localhost';
+FLUSH PRIVILEGES;
+
+CREATE TABLE users (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(150) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE clients (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    nom VARCHAR(100) NOT NULL,
+    prenom VARCHAR(100) NOT NULL,
+    date_naissance DATE,
+    sexe ENUM('HOMME', 'FEMME') ,
+    adresse VARCHAR(255) NOT NULL,
+    telephone VARCHAR(30) NOT NULL,
+    email VARCHAR(150) NOT NULL UNIQUE,
+    nationalite VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE comptes (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    numero_compte VARCHAR(50) UNIQUE,
+    type_compte ENUM('COURANT', 'EPARGNE') NOT NULL,
+    date_creation DATE,
+    solde DECIMAL(15,2) NOT NULL DEFAULT 0,
+    client_id BIGINT,
+
+    CONSTRAINT fk_compte_client
+        FOREIGN KEY (client_id)
+        REFERENCES clients(id)
+        ON DELETE CASCADE
+);
+
+CREATE TABLE transactions (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    type_transaction ENUM('DEPOT', 'RETRAIT', 'VIREMENT') NOT NULL,
+    montant DECIMAL(15,2) NOT NULL,
+    date_transaction DATETIME,
+    compte_id BIGINT NOT NULL,
+    compte_dest_id BIGINT,
+
+    CONSTRAINT fk_transaction_compte
+        FOREIGN KEY (compte_id)
+        REFERENCES comptes(id),
+
+    CONSTRAINT fk_transaction_compte_dest
+        FOREIGN KEY (compte_dest_id)
+        REFERENCES comptes(id)
+);
+
+CREATE INDEX idx_compte_client ON comptes(client_id);
+CREATE INDEX idx_transaction_compte ON transactions(compte_id);
+CREATE INDEX idx_transaction_date ON transactions(date_transaction);
+
+CREATE INDEX idx_comptes_numero_compte ON comptes(numero_compte);
+
+ALTER TABLE clients
+ADD COLUMN codePostal VARCHAR(20),
+ADD COLUMN typeDocument VARCHAR(50),
+ADD COLUMN numeroDocument VARCHAR(50);
+
+
+ALTER TABLE transactions
+MODIFY compte_dest_id BIGINT NULL;
+
+ALTER TABLE transactions
+MODIFY compte_id BIGINT NOT NULL;
+
+ALTER TABLE transactions
+ADD CONSTRAINT chk_transaction_comptes
+CHECK (
+    (type_transaction IN ('DEPOT','RETRAIT') AND compte_dest_id IS NULL)
+    OR
+    (type_transaction = 'VIREMENT' AND compte_dest_id IS NOT NULL)
+);
