@@ -1,12 +1,15 @@
+ 
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TransactionService } from '../../../core/services/transaction.service';
 import { CardComponent } from '../../../shared/components/ui/card.component';
+import { finalize } from 'rxjs/internal/operators/finalize';
 
 @Component({
   selector: 'app-historique',
   imports: [CommonModule, FormsModule, CardComponent],
+  standalone: true,
   templateUrl: './historique.component.html',
   styleUrls: ['./historique.component.css']
 })
@@ -64,21 +67,36 @@ export class HistoriqueComponent implements OnInit {
     }
 
     this.isLoading = true;
-    this.txService.getHistorique(this.compteInfo.compteId, this.debut, this.fin).subscribe({
-      next: (data) => {
-        this.historique = data;
-        this.applyFilters();
-        this.calculatePages();
-        this.isLoading = false;
-      },
-      error: (err) => {
-        console.error(err);
-        this.historique = [];
-        this.filteredHistorique = [];
-        this.isLoading = false;
-      }
-    });
+
+    this.txService.getHistorique(this.compteInfo.compteId, this.debut, this.fin)
+      .pipe(finalize(() => this.isLoading = false))
+      .subscribe({
+        next: (data) => {
+          console.log('Données reçues:', data);
+
+          // 🔥 Crée une NOUVELLE référence
+          this.historique = [...data];
+          this.filteredHistorique = [...data];
+
+          console.log('Historique après assignation:', this.historique);
+          console.log('FilteredHistorique après assignation:', this.filteredHistorique);
+
+          this.currentPage = 1;
+          this.calculatePages();
+
+          console.log('PaginatedHistorique:', this.paginatedHistorique);
+
+          // Pas besoin de spread supplémentaire ici
+        }
+,
+        error: (err) => {
+          console.error(err);
+          this.historique = [];
+          this.filteredHistorique = [];
+        }
+      });
   }
+
 
   applyFilters() {
     let filtered = [...this.historique];
@@ -161,4 +179,51 @@ export class HistoriqueComponent implements OnInit {
     const day = date.getDate().toString().padStart(2, '0');
     return `${year}-${month}-${day}`;
   }
+
+  // Ajoutez ces méthodes à la classe HistoriqueComponent
+
+  getTotalByType(type: string): number {
+    return this.historique
+      .filter(t => t.typeTransaction === type)
+      .reduce((sum, transaction) => sum + (transaction.montant || 0), 0);
+  }
+
+  getCountByType(type: string): number {
+    return this.historique.filter(t => t.typeTransaction === type).length;
+  }
+
+  getRowClass(type: string): string {
+    const classes: any = {
+      'DEPOT': 'row-depot',
+      'RETRAIT': 'row-retrait',
+      'VIREMENT': 'row-virement'
+    };
+    return classes[type] || '';
+  }
+
+  getAccountDetails(transaction: any): string {
+    if (transaction.compte) {
+      return transaction.compte.numeroCompte;
+    }
+    return '';
+  }
+
+  calculateBalance(index: number): number {
+    let balance = this.compteInfo?.solde || 0;
+    
+    // Calculer le solde en remontant depuis la transaction la plus récente
+    for (let i = this.historique.length - 1; i >= index; i--) {
+      const t = this.historique[i];
+      if (t.typeTransaction === 'DEPOT') {
+        balance -= t.montant;
+      } else if (t.typeTransaction === 'RETRAIT') {
+        balance += t.montant;
+      } else if (t.typeTransaction === 'VIREMENT') {
+        balance += t.montant; // Pour un virement, on ajoute car on part du solde actuel
+      }
+    }
+    
+    return balance;
+  }
+
 }

@@ -1,3 +1,4 @@
+ 
  <app-card title="📊 Historique des transactions">
   <div class="historique-container">
     <!-- Section Recherche -->
@@ -75,7 +76,7 @@
             <i class="icon">📊</i> Charger l'historique
           </span>
           <span *ngIf="isLoading">
-            <div class="spinner white"></div> Chargement...
+            <div class="spinner white"></div>
           </span>
         </button>
       </div>
@@ -86,6 +87,10 @@
       <div class="filters-header">
         <h3>Filtres et statistiques</h3>
       </div>
+      <p style="color:red">
+  DEBUG: {{ filteredHistorique | json }}
+</p>
+
       
       <div class="stats-cards">
         <div class="stat-card total">
@@ -163,7 +168,8 @@
     </div>
 
     <!-- Section Résultats -->
-    <div *ngIf="filteredHistorique.length > 0" class="results-section">
+    
+    <div *ngIf="historique.length > 0" class="results-section">
       <div class="results-header">
         <h3>Transactions ({{ filteredHistorique.length }})</h3>
         <div class="export-actions">
@@ -279,12 +285,10 @@
     </div>
 
     <!-- Message Chargement -->
-    <div *ngIf="isLoading" class="loading-overlay">
-      <div class="loading-content">
-        <div class="spinner large"></div>
-        <h3>Chargement de l'historique...</h3>
-        <p>Veuillez patienter pendant le traitement des données.</p>
-      </div>
-    </div>
+  <div *ngIf="isLoading" class="inline-loading">
+    <div class="spinner"></div>
+    <span>Chargement de l'historique...</span>
+  </div>
+
   </div>
 </app-card>

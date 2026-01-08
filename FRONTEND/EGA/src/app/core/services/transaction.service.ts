@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, map, catchError, of, throwError } from 'rxjs';
+import { Observable, map, catchError, of, throwError, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Transaction } from '../../shared/models/transaction.model';
 import { CompteService } from './compte.service';
@@ -46,12 +46,28 @@ export class TransactionService {
     );
   }
 
-  getHistorique(compteId: number, debut: string, fin: string): Observable<Transaction[]> {
+  /* getHistorique(compteId: number, debut: string, fin: string): Observable<Transaction[]> {
     return this.http.get<Transaction[]>(
       `${this.api}/historique/${compteId}?debut=${debut}&fin=${fin}`
     );
-  }
+  }  */
 
+
+    getHistorique(compteId: number, debut: string, fin: string): Observable<Transaction[]> {
+      const url = `${this.api}/historique/${compteId}?debut=${debut}&fin=${fin}`;
+      console.log('URL appelée:', url); // Debug
+      
+      return this.http.get<Transaction[]>(url).pipe(
+          tap(data => console.log('Données reçues:', data)), // Debug
+          catchError((error) => {
+              console.error('Erreur complète:', error);
+              console.error('Status:', error.status);
+              console.error('Message:', error.message);
+              console.error('Error body:', error.error);
+              return throwError(() => error);
+          })
+      );
+  }
   // Nouvelle méthode pour récupérer les infos client par numéro de compte
   getClientInfoByNumeroCompte(numeroCompte: string): Observable<any> {
     // RETIRER LES ESPACES du numéro de compte
