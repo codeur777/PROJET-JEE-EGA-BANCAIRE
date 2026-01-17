@@ -4,6 +4,34 @@
   padding: 20px;
 }
 
+/* Alertes */
+.alert {
+  padding: 16px 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 500;
+  border: 1px solid;
+}
+
+.alert-error {
+  background: #fef2f2;
+  color: #dc2626;
+  border-color: #fecaca;
+}
+
+.alert-success {
+  background: #f0fdf4;
+  color: #16a34a;
+  border-color: #bbf7d0;
+}
+
+.alert .icon {
+  font-size: 18px;
+}
+
 /* Search Section */
 .search-section {
   background: #f8fafc;
@@ -20,7 +48,7 @@
 .search-header h3 {
   margin: 0 0 8px 0;
   color: #2c3e50;
-  font-size: 24px;
+  font-size: 18px;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -135,7 +163,7 @@
 .client-info-mini h4 {
   margin: 0 0 4px 0;
   color: #2c3e50;
-  font-size: 16px;
+  font-size: 14px;
 }
 
 .account-number-mini {
@@ -158,7 +186,7 @@
 }
 
 .balance-amount {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
   color: #2ecc71;
 }
@@ -252,7 +280,7 @@
 .filters-header h3 {
   margin: 0;
   color: #2c3e50;
-  font-size: 20px;
+  font-size: 16px;
 }
 
 .stats-cards {
@@ -296,7 +324,7 @@
   align-items: center;
   justify-content: center;
   color: white;
-  font-size: 24px;
+  font-size: 18px;
 }
 
 .stat-info {
@@ -312,7 +340,7 @@
 }
 
 .stat-value {
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 700;
   color: #2c3e50;
 }
@@ -339,7 +367,7 @@
 .results-header h3 {
   margin: 0;
   color: #2c3e50;
-  font-size: 20px;
+  font-size: 16px;
 }
 
 .export-actions {

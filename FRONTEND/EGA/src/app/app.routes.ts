@@ -112,3 +112,4 @@ export const routes: Routes = [
   // Route 404
   { path: '**', redirectTo: '/login' }
 ];
+

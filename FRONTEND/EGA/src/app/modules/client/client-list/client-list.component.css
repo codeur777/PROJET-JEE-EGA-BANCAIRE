@@ -28,13 +28,13 @@
 }
 
 .page-title h1 {
-  font-size: 2.2rem;
+  font-size: 1.8rem;
   color: #002a5c;
   margin: 0;
 }
 
 .page-title .subtitle {
-  font-size: 1rem;
+  font-size: 0.85rem;
   color: #64748b;
   font-weight: 400;
   margin-top: 4px;
@@ -206,7 +206,7 @@
 }
 
 .stat-value {
-  font-size: 2.2rem;
+  font-size: 1.8rem;
   font-weight: 800;
   color: #1e293b;
   margin: 8px 0;
@@ -241,7 +241,7 @@
 }
 
 .table-title {
-  font-size: 1.4rem;
+  font-size: 1.2rem;
   font-weight: 700;
   color: #1e293b;
 }

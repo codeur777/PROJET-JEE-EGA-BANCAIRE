@@ -8,8 +8,12 @@ import { CommonModule } from '@angular/common';
 })
 export class HeaderComponent {
   user = localStorage.getItem('user') || 'Utilisateur';
+
   logout() {
-    localStorage.clear();
-    window.location.href = "/login";
+    const confirmLogout = confirm('Êtes-vous sûr de vouloir vous déconnecter ?');
+    if (confirmLogout) {
+      localStorage.clear();
+      window.location.href = "/login";
+    }
   }
 }

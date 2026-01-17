@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { TransactionService } from '../../../core/services/transaction.service';
 import { CardComponent } from '../../../shared/components/ui/card.component';
 import { finalize } from 'rxjs/internal/operators/finalize';
+import { timeout } from 'rxjs/operators';
 
 @Component({
   selector: 'app-historique',
@@ -22,6 +23,8 @@ export class HistoriqueComponent implements OnInit {
   filteredHistorique: any[] = [];
   isLoading = false;
   isLoadingCompte = false;
+  errorMessage = '';
+  successMessage = '';
   
   // Filtres
   filterType = 'TOUS';
@@ -45,54 +48,105 @@ export class HistoriqueComponent implements OnInit {
   onNumeroCompteChange() {
     if (this.numeroCompte.trim().length > 0) {
       this.isLoadingCompte = true;
-      this.txService.getClientInfoByNumeroCompte(this.numeroCompte).subscribe({
-        next: (data: any) => {
-          this.compteInfo = data;
-          this.isLoadingCompte = false;
-        },
-        error: () => {
-          this.compteInfo = null;
-          this.isLoadingCompte = false;
-        }
-      });
+      this.errorMessage = '';
+      this.compteInfo = null;
+      this.historique = [];
+      this.filteredHistorique = [];
+
+      // Timeout de 10 secondes pour la recherche du compte
+      const searchTimeoutMs = 10000;
+
+      this.txService.getClientInfoByNumeroCompte(this.numeroCompte)
+        .pipe(timeout(searchTimeoutMs))
+        .subscribe({
+          next: (data: any) => {
+            if (data) {
+              this.compteInfo = data;
+              this.successMessage = `Compte trouvé : ${data.clientName}`;
+            } else {
+              this.compteInfo = null;
+              this.errorMessage = 'Aucun compte trouvé avec ce numéro.';
+            }
+            this.isLoadingCompte = false;
+          },
+          error: (err) => {
+            console.error('Erreur lors de la recherche du compte:', err);
+            this.compteInfo = null;
+            this.isLoadingCompte = false;
+
+            if (err.name === 'TimeoutError') {
+              this.errorMessage = 'La recherche du compte prend trop de temps. Veuillez réessayer.';
+            } else {
+              this.errorMessage = 'Erreur lors de la recherche du compte. Vérifiez le numéro.';
+            }
+          }
+        });
     } else {
       this.compteInfo = null;
+      this.historique = [];
+      this.filteredHistorique = [];
+      this.errorMessage = '';
+      this.successMessage = '';
     }
   }
 
   loadHistorique() {
     if (!this.compteInfo || !this.debut || !this.fin) {
-      alert('Veuillez remplir tous les champs');
+      this.errorMessage = 'Veuillez remplir tous les champs et rechercher un compte valide.';
       return;
     }
 
     this.isLoading = true;
+    this.errorMessage = '';
+    this.successMessage = '';
+
+    // Timeout de 30 secondes pour éviter les attentes trop longues
+    const timeoutMs = 30000;
 
     this.txService.getHistorique(this.compteInfo.compteId, this.debut, this.fin)
-      .pipe(finalize(() => this.isLoading = false))
+      .pipe(
+        finalize(() => this.isLoading = false),
+        // Ajouter un timeout
+        timeout(timeoutMs)
+      )
       .subscribe({
         next: (data) => {
           console.log('Données reçues:', data);
 
-          // 🔥 Crée une NOUVELLE référence
-          this.historique = [...data];
-          this.filteredHistorique = [...data];
-
-          console.log('Historique après assignation:', this.historique);
-          console.log('FilteredHistorique après assignation:', this.filteredHistorique);
+          // Traiter les données
+          this.historique = Array.isArray(data) ? [...data] : [];
+          this.filteredHistorique = [...this.historique];
 
           this.currentPage = 1;
           this.calculatePages();
 
-          console.log('PaginatedHistorique:', this.paginatedHistorique);
+          if (this.historique.length > 0) {
+            this.successMessage = `${this.historique.length} transaction(s) trouvée(s) pour la période sélectionnée.`;
+          } else {
+            this.errorMessage = 'Aucune transaction trouvée pour cette période.';
+          }
 
-          // Pas besoin de spread supplémentaire ici
-        }
-,
+          // Forcer la mise à jour de la vue
+          setTimeout(() => {
+            this.applyFilters();
+          }, 100);
+        },
         error: (err) => {
-          console.error(err);
+          console.error('Erreur lors du chargement:', err);
           this.historique = [];
           this.filteredHistorique = [];
+
+          if (err.name === 'TimeoutError') {
+            this.errorMessage = 'La requête a pris trop de temps. Veuillez réessayer plus tard.';
+          } else if (err.status === 404) {
+            this.errorMessage = 'Aucune transaction trouvée pour ce compte.';
+          } else if (err.status === 400) {
+            this.errorMessage = 'Paramètres invalides. Vérifiez les dates.';
+          } else if (err.status === 500) {
+            this.errorMessage = 'Erreur serveur. Veuillez contacter l\'administrateur.';
+          } else {
+            this.errorMessage = 'Une erreur inattendue s\'est produite. Veuillez réessayer.';
+          }
         }
       });
   }

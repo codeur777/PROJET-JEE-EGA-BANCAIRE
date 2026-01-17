@@ -76,7 +76,7 @@
 
 .account-header h4 {
   margin: 0;
-  font-size: 18px;
+  font-size: 16px;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -102,12 +102,12 @@
 }
 
 .detail-value {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
 }
 
 .detail-value.solde {
-  font-size: 18px;
+  font-size: 16px;
   color: #4ade80;
 }
 

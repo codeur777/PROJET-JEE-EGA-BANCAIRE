@@ -1,6 +1,16 @@
- 
  <app-card title="📊 Historique des transactions">
   <div class="historique-container">
+    <!-- Messages d'erreur et de succès -->
+    <div *ngIf="errorMessage" class="alert alert-error">
+      <i class="icon">⚠️</i>
+      {{ errorMessage }}
+    </div>
+    
+    <div *ngIf="successMessage" class="alert alert-success">
+      <i class="icon">✅</i>
+      {{ successMessage }}
+    </div>
+
     <!-- Section Recherche -->
     <div class="search-section">
       <div class="search-header">
@@ -87,9 +97,6 @@
       <div class="filters-header">
         <h3>Filtres et statistiques</h3>
       </div>
-      <p style="color:red">
-  DEBUG: {{ filteredHistorique | json }}
-</p>
 
       
       <div class="stats-cards">
@@ -175,9 +182,6 @@
         <div class="export-actions">
           <button class="export-btn">
             <i class="icon">📥</i> Exporter PDF
-          </button>
-          <button class="export-btn">
-            <i class="icon">📄</i> Exporter CSV
           </button>
         </div>
       </div>

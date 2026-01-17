@@ -1,43 +1,49 @@
-<aside class="sidebar">
-  <a routerLink="/dashboard" routerLinkActive="active">
+<aside class="sidebar" [class.collapsed]="isCollapsed()">
+  <div class="sidebar-header">
+    <button class="toggle-btn" (click)="toggleSidebar()" [title]="isCollapsed() ? 'Étendre le sidebar' : 'Réduire le sidebar'">
+      <span class="toggle-icon">{{ isCollapsed() ? '→' : '←' }}</span>
+    </button>
+  </div>
+
+  <a routerLink="/home" routerLinkActive="active">
     <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=24&h=24&fit=crop" alt="Dashboard">
     <span>Tableau de bord</span>
   </a>
-  
+
   <a routerLink="/client" routerLinkActive="active">
     <img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=24&h=24&fit=crop" alt="Clients">
     <span>Clients</span>
   </a>
-  
+
   <a routerLink="/compte" routerLinkActive="active">
     <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=24&h=24&fit=crop" alt="Comptes">
     <span>Comptes</span>
   </a>
-  
+
   <div class="sidebar-divider">Transactions</div>
-  
+
   <a routerLink="/transaction/depot" routerLinkActive="active">
     <img src="https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=24&h=24&fit=crop" alt="Dépôt">
     <span>Dépôt</span>
   </a>
-  
+
   <a routerLink="/transaction/retrait" routerLinkActive="active">
     <img src="https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=24&h=24&fit=crop" alt="Retrait">
     <span>Retrait</span>
   </a>
-  
+
   <a routerLink="/transaction/virement" routerLinkActive="active">
     <img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=24&h=24&fit=crop" alt="Virement">
     <span>Virement</span>
   </a>
-  
+
   <a routerLink="/transaction/historique" routerLinkActive="active">
     <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=24&h=24&fit=crop" alt="Historique">
     <span>Historique</span>
   </a>
-  
+
   <div class="sidebar-divider">Rapports</div>
-  
+
   <a routerLink="/releve" routerLinkActive="active">
     <img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=24&h=24&fit=crop" alt="Relevé">
     <span>Relevé bancaire</span>
