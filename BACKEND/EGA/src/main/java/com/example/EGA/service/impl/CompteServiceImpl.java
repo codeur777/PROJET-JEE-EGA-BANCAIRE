@@ -50,7 +50,7 @@ public class CompteServiceImpl implements CompteService {
 
     @Override
     public Compte getCompteById(Long id) {
-        return compteRepository.findById(id)
+        return compteRepository.findByIdWithClient(id)
                 .orElseThrow(() -> new RuntimeException("Compte introuvable"));
     }
 

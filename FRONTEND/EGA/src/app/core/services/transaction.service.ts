@@ -123,4 +123,30 @@ export class TransactionService {
     
     return throwError(() => new Error(errorMessage));
   }
+
+  // Nouvelle méthode pour générer et télécharger le PDF du relevé
+  downloadRelevePDF(compteId: number, dateDebut: string, dateFin: string): Observable<Blob> {
+    const url = `${environment.apiUrl}/releves/pdf/${compteId}?dateDebut=${dateDebut}&dateFin=${dateFin}`;
+    
+    return this.http.get(url, {
+      responseType: 'blob',
+      observe: 'response',
+      timeout: 30000 // Timeout de 30 secondes
+    }).pipe(
+      map(response => {
+        if (response.body) {
+          return response.body;
+        } else {
+          throw new Error('Aucun contenu PDF reçu');
+        }
+      }),
+      catchError((error) => {
+        console.error('Erreur lors du téléchargement du PDF:', error);
+        if (error.name === 'TimeoutError') {
+          return throwError(() => new Error('La génération du PDF prend trop de temps. Veuillez réessayer avec une période plus courte.'));
+        }
+        return throwError(() => new Error('Erreur lors de la génération du PDF'));
+      })
+    );
+  }
 }

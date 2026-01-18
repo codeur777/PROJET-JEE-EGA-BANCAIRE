@@ -62,8 +62,6 @@
             name="format"
             [(ngModel)]="filters.format">
             <option value="PDF">PDF</option>
-            <option value="EXCEL">Excel</option>
-            <option value="CSV">CSV</option>
           </select>
         </div>
       </div>
@@ -182,15 +180,15 @@
           </thead>
           <tbody>
             <tr *ngFor="let tx of transactions; let i = index">
-              <td>{{ tx.dateOperation | date:'dd/MM/yyyy HH:mm' }}</td>
+              <td>{{ tx.dateTransaction | date:'dd/MM/yyyy HH:mm' }}</td>
               <td>{{ getLibelle(tx) }}</td>
               <td>
                 <span class="transaction-type" [ngClass]="{
-                  'depot': tx.type === 'DEPOT',
-                  'retrait': tx.type === 'RETRAIT',
-                  'virement': tx.type === 'VIREMENT'
+                  'depot': tx.typeTransaction === 'DEPOT',
+                  'retrait': tx.typeTransaction === 'RETRAIT',
+                  'virement': tx.typeTransaction === 'VIREMENT'
                 }">
-                  {{ tx.type }}
+                  {{ tx.typeTransaction }}
                 </span>
               </td>
               <td class="text-right">

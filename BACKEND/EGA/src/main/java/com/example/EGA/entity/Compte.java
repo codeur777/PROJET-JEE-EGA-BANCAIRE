@@ -45,6 +45,11 @@ public class Compte {
     @JsonIgnore
     private List<Transaction> transactions;
 
+    // Getter personnalisé pour retourner l'ID du client
+    public Long getClientId() {
+        return proprietaire != null ? proprietaire.getId() : null;
+    }
+
     @PrePersist
     public void generateNumeroCompte() {
         if (numeroCompte == null || numeroCompte.isEmpty()) {

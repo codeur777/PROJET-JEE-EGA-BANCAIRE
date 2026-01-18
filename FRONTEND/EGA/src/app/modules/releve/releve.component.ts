@@ -81,14 +81,35 @@ export class ReleveComponent implements OnInit {
         this.selectedCompte = compte;
 
         // Charger le client associé
-        this.clientService.getClientById(compte.clientId!).subscribe({
-            next: (client: Client) => {
-            this.selectedClient = client;
-        },
-          error: (err) => {
-            console.error('Erreur lors du chargement du client:', err);
-          }
-        });
+        if (compte.clientId) {
+          this.clientService.getClientById(compte.clientId).subscribe({
+              next: (client: Client) => {
+              this.selectedClient = client;
+            },
+            error: (err) => {
+              console.error('Erreur lors du chargement du client:', err);
+              // Continuer même si le client n'est pas trouvé
+              this.selectedClient = {
+                id: compte.clientId || 0,
+                nom: 'Client',
+                prenom: 'Inconnu',
+                email: 'inconnu@email.com',
+                telephone: 'N/A',
+                adresse: 'N/A'
+              };
+            }
+          });
+        } else {
+          // Si pas de clientId, créer un client fictif
+          this.selectedClient = {
+            id: 0,
+            nom: 'Client',
+            prenom: 'Inconnu',
+            email: 'inconnu@email.com',
+            telephone: 'N/A',
+            adresse: 'N/A'
+          };
+        }
 
         // Charger les transactions
         this.transactionService.getHistorique(
@@ -98,7 +119,7 @@ export class ReleveComponent implements OnInit {
         ).subscribe({
           next: (transactions: Transaction[]) => {
             this.transactions = transactions.sort((a, b) => {
-              return new Date(a.dateOperation!).getTime() - new Date(b.dateOperation!).getTime();
+              return new Date(a.dateTransaction!).getTime() - new Date(b.dateTransaction!).getTime();
             });
             this.showPreview = true;
             this.loading = false;
@@ -131,47 +152,48 @@ export class ReleveComponent implements OnInit {
 
   downloadReleve() {
     if (this.filters.format === 'PDF') {
-      // Pour une vraie implémentation, utiliser jsPDF ou html2pdf
-      alert('Téléchargement PDF en cours de développement...\nUtilisez la fonction Imprimer pour le moment.');
-      this.printReleve();
-    } else if (this.filters.format === 'EXCEL') {
-      this.exportToExcel();
-    } else if (this.filters.format === 'CSV') {
-      this.exportToCSV();
+      this.downloadRelevePDF();
     }
   }
 
-  exportToExcel() {
-    alert('Export Excel en cours de développement...');
-  }
-
-  exportToCSV() {
-    if (this.transactions.length === 0) {
-      alert('Aucune transaction à exporter');
+  downloadRelevePDF() {
+    if (!this.selectedCompte) {
+      alert('Veuillez d\'abord générer le relevé');
       return;
     }
 
-    const headers = ['Date', 'Type', 'Libellé', 'Montant', 'Solde'];
-    const csvContent = [
-      headers.join(';'),
-      ...this.transactions.map((tx, i) => [
-        new Date(tx.dateOperation!).toLocaleDateString('fr-FR'),
-        tx.type,
-        this.getLibelle(tx),
-        tx.montant,
-        this.calculateSolde(i)
-      ].join(';'))
-    ].join('\n');
+    // Afficher un message d'attente
+    const loadingMessage = 'Génération du PDF en cours... Cela peut prendre quelques secondes.';
+    alert(loadingMessage);
 
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `releve_${this.selectedCompte?.numeroCompte}_${new Date().getTime()}.csv`;
-    link.click();
+    this.loading = true;
+
+    this.transactionService.downloadRelevePDF(
+      Number(this.filters.compteId),
+      this.filters.dateDebut,
+      this.filters.dateFin
+    ).subscribe({
+      next: (blob: Blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `releve_${this.selectedCompte?.numeroCompte}_${new Date().getTime()}.pdf`;
+        link.click();
+        window.URL.revokeObjectURL(url);
+        this.loading = false;
+        alert('PDF téléchargé avec succès !');
+      },
+      error: (err) => {
+        console.error('Erreur lors du téléchargement du PDF:', err);
+        alert('Erreur lors de la génération du PDF: ' + err.message);
+        this.loading = false;
+      }
+    });
   }
 
   getLibelle(tx: Transaction): string {
-    switch (tx.type) {
+    const type = tx.typeTransaction || tx.type;
+    switch (type) {
       case 'DEPOT':
         return 'Dépôt sur compte';
       case 'RETRAIT':
@@ -188,8 +210,9 @@ export class ReleveComponent implements OnInit {
   }
 
   isDebit(tx: Transaction): boolean {
-    if (tx.type === 'RETRAIT') return true;
-    if (tx.type === 'VIREMENT' && tx.compteSourceId === Number(this.filters.compteId)) return true;
+    const type = tx.typeTransaction || tx.type;
+    if (type === 'RETRAIT') return true;
+    if (type === 'VIREMENT' && tx.compteSourceId === Number(this.filters.compteId)) return true;
     return false;
   }
 

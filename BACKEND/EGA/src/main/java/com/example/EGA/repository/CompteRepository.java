@@ -18,4 +18,8 @@ public interface CompteRepository extends JpaRepository<Compte, Long> {
     // Méthode avec jointure pour charger le client aussi
     @Query("SELECT c FROM Compte c LEFT JOIN FETCH c.proprietaire WHERE REPLACE(c.numeroCompte, ' ', '') = REPLACE(:numeroCompte, ' ', '')")
     Optional<Compte> findByNumeroCompteWithClient(@Param("numeroCompte") String numeroCompte);
+    
+    // Méthode pour récupérer un compte par ID avec le client chargé
+    @Query("SELECT c FROM Compte c LEFT JOIN FETCH c.proprietaire WHERE c.id = :id")
+    Optional<Compte> findByIdWithClient(@Param("id") Long id);
 }
