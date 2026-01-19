@@ -4,6 +4,7 @@ import { Observable, catchError, of } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Compte } from '../../shared/models/compte.model';
 import { CompteCreateDTO } from '../../shared/models/compte-create.Dto';
+import { TokenService } from './token.service';
 
 @Injectable({
   providedIn: 'root'
@@ -12,9 +13,18 @@ export class CompteService {
 
   private api = `${environment.apiUrl}/comptes`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private tokenService: TokenService) {}
 
   getComptes(): Observable<Compte[]> {
+    // Si c'est un client, récupérer seulement ses comptes
+    if (this.tokenService.hasRole('CLIENT') || this.tokenService.hasRole('USER')) {
+      const user = this.tokenService.getUser();
+      if (user && user.clientId) {
+        return this.http.get<Compte[]>(`${this.api}/client/${user.clientId}`);
+      }
+    }
+
+    // Pour les agents/admins, récupérer tous les comptes
     return this.http.get<Compte[]>(this.api);
   }
 

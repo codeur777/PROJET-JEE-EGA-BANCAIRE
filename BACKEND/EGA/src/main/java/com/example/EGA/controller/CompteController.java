@@ -27,6 +27,11 @@ public class CompteController {
         return compteService.getAllComptes();
     }
 
+    @GetMapping("/client/{clientId}")
+    public List<Compte> getComptesByClient(@PathVariable Long clientId) {
+        return compteService.getComptesByClientId(clientId);
+    }
+
     @GetMapping("/{id}")
     public Compte getById(@PathVariable Long id) {
         return compteService.getCompteById(id);

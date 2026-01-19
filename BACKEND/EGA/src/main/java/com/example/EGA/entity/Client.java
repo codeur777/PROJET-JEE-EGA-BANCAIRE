@@ -11,7 +11,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "clients")
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -57,6 +60,8 @@ public class Client {
     private String typeDocument;
     @NotBlank(message = "Numéro de document obligatoire")
     private String numeroDocument;
+
+    private LocalDate dateInscription = LocalDate.now(); // Date d'inscription
 
     @OneToMany(mappedBy = "proprietaire", cascade = CascadeType.ALL)
     @JsonIgnore

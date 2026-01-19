@@ -10,9 +10,12 @@ import java.util.Collection;
 
 @Entity
 @Table(name = "users")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
+@EqualsAndHashCode
 @Builder
 public class User implements UserDetails {
 
@@ -29,6 +32,12 @@ public class User implements UserDetails {
     @NotBlank
     @Column(unique = true)
     private String email;
+
+    @Builder.Default
+    private String role = "USER"; // Rôle par défaut
+
+    @Builder.Default
+    private boolean enabled = true; // Compte activé par défaut
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

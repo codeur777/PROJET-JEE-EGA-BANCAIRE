@@ -1,5 +1,13 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
+import { 
+  adminGuard, 
+  agentGuard, 
+  clientGuard, 
+  notAdminGuard, 
+  notClientGuard,
+  noReleveForClientsGuard
+} from './core/guards/role.guard';
 
 // Auth
 import { LoginComponent } from './modules/auth/login/login.component';
@@ -11,6 +19,10 @@ import { HomeComponent } from './modules/home/home.component';
 // Client
 import { ClientListComponent } from './modules/client/client-list/client-list.component';
 import { ClientFormComponent } from './modules/client/client-form/client-form.component';
+import { ClientDashboardComponent } from './modules/client/dashboard/client-dashboard.component';
+
+// Admin
+import { AdminComponent } from './modules/admin/admin.component';
 
 // Compte
 import { CompteListComponent } from './modules/compte/compte-list/compte-list.component';
@@ -33,80 +45,88 @@ export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   
-  // Routes protégées
+  // Routes protégées - HOME (Agents uniquement)
   { 
     path: 'home', 
     component: HomeComponent,
-    canActivate: [authGuard]
+    canActivate: [agentGuard, notClientGuard]
   },
-
-  /*{ 
-    path: 'dashboard', 
-    component: HomeComponent,
-    canActivate: [authGuard]
-  },*/
   
-  // Gestion des clients
+  // Routes protégées - CLIENT DASHBOARD (Clients uniquement)
+  { 
+    path: 'client/dashboard', 
+    component: ClientDashboardComponent,
+    canActivate: [clientGuard]
+  },
+  
+  // Routes protégées - GESTION DES CLIENTS (Agents/Admins, pas clients)
   { 
     path: 'client', 
     component: ClientListComponent,
-    canActivate: [authGuard]
+    canActivate: [notClientGuard]
   },
   { 
     path: 'client/add', 
     component: ClientFormComponent,
-    canActivate: [authGuard]
+    canActivate: [notClientGuard]
   },
   { 
     path: 'client/edit/:id', 
     component: ClientFormComponent,
-    canActivate: [authGuard]
+    canActivate: [notClientGuard]
   },
   
-  // Gestion des comptes
+  // Routes protégées - ADMIN (Admins uniquement)
+  { 
+    path: 'admin', 
+    component: AdminComponent,
+    canActivate: [adminGuard]
+  },
+  
+  // Routes protégées - GESTION DES COMPTES (Agents/Clients, pas admins)
   { 
     path: 'compte', 
     component: CompteListComponent,
-    canActivate: [authGuard]
+    canActivate: [notAdminGuard]
   },
   { 
     path: 'compte/add', 
     component: CompteFormComponent,
-    canActivate: [authGuard]
+    canActivate: [notAdminGuard]
   },
   { 
     path: 'compte/edit/:id', 
     component: CompteFormComponent,
-    canActivate: [authGuard]
+    canActivate: [notAdminGuard]
   },
   
-  // Transactions
+  // Routes protégées - TRANSACTIONS (Agents/Clients, pas admins)
   { 
     path: 'transaction/depot', 
     component: DepotComponent,
-    canActivate: [authGuard]
+    canActivate: [notAdminGuard]
   },
   { 
     path: 'transaction/retrait', 
     component: RetraitComponent,
-    canActivate: [authGuard]
+    canActivate: [notAdminGuard]
   },
   { 
     path: 'transaction/virement', 
     component: VirementComponent,
-    canActivate: [authGuard]
+    canActivate: [notAdminGuard]
   },
   { 
     path: 'transaction/historique', 
     component: HistoriqueComponent,
-    canActivate: [authGuard]
+    canActivate: [notAdminGuard]
   },
   
-  // Relevé bancaire
+  // Routes protégées - RELEVÉ (Agents uniquement, pas clients ni admins)
   { 
     path: 'releve', 
     component: ReleveComponent,
-    canActivate: [authGuard]
+    canActivate: [noReleveForClientsGuard]
   },
   
   // Route 404

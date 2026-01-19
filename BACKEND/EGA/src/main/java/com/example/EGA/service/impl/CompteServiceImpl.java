@@ -87,4 +87,9 @@ public class CompteServiceImpl implements CompteService {
     ) {
         return transactionService.getTransactionsByCompteAndPeriod(id, start, end);
     }
+
+    @Override
+    public List<Compte> getComptesByClientId(Long clientId) {
+        return compteRepository.findByProprietaireId(clientId);
+    }
 }

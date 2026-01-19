@@ -3,6 +3,7 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { HeaderComponent } from '../../shared/components/layout/header.component';
 
 import { CommonModule } from '@angular/common';
+import { SidebarComponent } from '../../shared/components/layout/sidebar.component';
 
 @Component({
   selector: 'app-home',
@@ -11,6 +12,7 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./home.component.css'],
   imports: [
     CommonModule,
+    SidebarComponent,
     HeaderComponent,
     HttpClientModule // <-- IMPORTANT !
   ]

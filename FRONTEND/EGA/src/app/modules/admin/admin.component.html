@@ -1,0 +1,414 @@
+<div class="admin-container">
+  <!-- Header -->
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container-fluid">
+      <span class="navbar-brand mb-0 h1">
+        <i class="fas fa-user-shield me-2"></i>Panel Administrateur
+      </span>
+      <button class="btn btn-outline-light" (click)="logout()">
+        <i class="fas fa-sign-out-alt me-2"></i>Déconnexion
+      </button>
+    </div>
+  </nav>
+
+  <!-- Navigation Tabs -->
+  <div class="nav-tabs-container">
+    <ul class="nav nav-tabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button
+          class="nav-link"
+          [class.active]="activeTab === 'dashboard'"
+          (click)="setActiveTab('dashboard')"
+          type="button">
+          <i class="fas fa-chart-line"></i>Tableau de Bord
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button
+          class="nav-link"
+          [class.active]="activeTab === 'clients'"
+          (click)="setActiveTab('clients')"
+          type="button">
+          <i class="fas fa-users"></i>Clients
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button
+          class="nav-link"
+          [class.active]="activeTab === 'agents'"
+          (click)="setActiveTab('agents')"
+          type="button">
+          <i class="fas fa-user-tie"></i>Agents
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button
+          class="nav-link"
+          [class.active]="activeTab === 'comptes'"
+          (click)="setActiveTab('comptes')"
+          type="button">
+          <i class="fas fa-credit-card"></i>Comptes
+        </button>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Tab Content -->
+  <div class="tab-content">
+
+    <!-- Dashboard Tab -->
+    <div *ngIf="activeTab === 'dashboard'" class="tab-pane active">
+      
+      <!-- Statistics Cards -->
+      <div class="row mb-4" *ngIf="!loading.stats">
+        <div class="col-md-3 mb-3">
+          <div class="card stats-card bg-primary text-white">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h5 class="card-title">Total Clients</h5>
+                  <h2 class="mb-0">{{ stats.totalClients }}</h2>
+                  <small class="d-block mt-2">
+                    <i class="fas fa-check-circle me-1"></i>{{ stats.clientsActifs }} actifs
+                  </small>
+                </div>
+                <i class="fas fa-users fa-3x"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+          <div class="card stats-card bg-success text-white">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h5 class="card-title">Total Comptes</h5>
+                  <h2 class="mb-0">{{ stats.totalComptes }}</h2>
+                  <small class="d-block mt-2">
+                    <i class="fas fa-wallet me-1"></i>{{ stats.comptesCourants }} courants
+                  </small>
+                </div>
+                <i class="fas fa-credit-card fa-3x"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+          <div class="card stats-card bg-info text-white">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h5 class="card-title">Agents Actifs</h5>
+                  <h2 class="mb-0">{{ stats.totalAgents }}</h2>
+                  <small class="d-block mt-2">
+                    <i class="fas fa-user-check me-1"></i>En service
+                  </small>
+                </div>
+                <i class="fas fa-user-tie fa-3x"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+          <div class="card stats-card bg-warning text-white">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h5 class="card-title">Solde Total</h5>
+                  <h4 class="mb-0">{{ formatCurrency(stats.soldeTotal) }}</h4>
+                  <small class="d-block mt-2">
+                    <i class="fas fa-chart-line me-1"></i>Actifs bancaires
+                  </small>
+                </div>
+                <i class="fas fa-euro-sign fa-3x"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading Stats -->
+      <div *ngIf="loading.stats" class="text-center loading-container">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Chargement des statistiques...</span>
+        </div>
+        <p class="mt-3 text-muted">Chargement des statistiques...</p>
+      </div>
+
+      <!-- Charts Section -->
+      <div class="row" *ngIf="!loading.stats">
+        <!-- Account Type Chart -->
+        <div class="col-md-6 mb-4">
+          <div class="chart-container">
+            <div class="chart-wrapper">
+              <canvas #accountTypeChart></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Client Status Chart -->
+        <div class="col-md-6 mb-4">
+          <div class="chart-container">
+            <div class="chart-wrapper">
+              <canvas #clientStatusChart></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Balance Evolution Chart -->
+        <div class="col-md-12 mb-4">
+          <div class="chart-container">
+            <div class="chart-wrapper">
+              <canvas #balanceEvolutionChart></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Monthly Stats Chart -->
+        <div class="col-md-12 mb-4">
+          <div class="chart-container">
+            <div class="chart-wrapper">
+              <canvas #monthlyStatsChart></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Clients Tab -->
+    <div *ngIf="activeTab === 'clients'" class="tab-pane active">
+      <div class="section-header">
+        <h3><i class="fas fa-users me-2"></i>Liste des Clients</h3>
+        <span class="badge bg-primary">{{ clients.length }} clients</span>
+      </div>
+
+      <div *ngIf="loading.clients" class="text-center loading-container">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Chargement des clients...</span>
+        </div>
+        <p class="mt-3 text-muted">Chargement des clients...</p>
+      </div>
+
+      <div *ngIf="!loading.clients" class="table-container">
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th><i class="fas fa-hashtag me-2"></i>ID</th>
+                <th><i class="fas fa-user me-2"></i>Nom</th>
+                <th><i class="fas fa-user me-2"></i>Prénom</th>
+                <th><i class="fas fa-envelope me-2"></i>Email</th>
+                <th><i class="fas fa-phone me-2"></i>Téléphone</th>
+                <th><i class="fas fa-toggle-on me-2"></i>Statut</th>
+                <th><i class="fas fa-calendar me-2"></i>Date d'inscription</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let client of clients">
+                <td><strong>#{{ client.id }}</strong></td>
+                <td>{{ client.nom }}</td>
+                <td>{{ client.prenom }}</td>
+                <td><i class="fas fa-envelope text-muted me-1"></i>{{ client.email }}</td>
+                <td><i class="fas fa-phone text-muted me-1"></i>{{ client.telephone }}</td>
+                <td>
+                  <span class="badge" [class]="client.statut === 'ACTIF' ? 'bg-success' : 'bg-secondary'">
+                    <i [class]="client.statut === 'ACTIF' ? 'fas fa-check-circle' : 'fas fa-times-circle'"></i>
+                    {{ client.statut }}
+                  </span>
+                </td>
+                <td>{{ formatDate(client.dateInscription || '') }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Agents Tab -->
+    <div *ngIf="activeTab === 'agents'" class="tab-pane active">
+      <div class="section-header">
+        <h3><i class="fas fa-user-tie me-2"></i>Gestion des Agents</h3>
+        <button class="btn btn-success" (click)="showCreateAgentForm = !showCreateAgentForm">
+          <i class="fas fa-plus me-2"></i>Ajouter un Agent
+        </button>
+      </div>
+
+      <!-- Create Agent Form -->
+      <div *ngIf="showCreateAgentForm" class="card mb-4">
+        <div class="card-header">
+          <h5><i class="fas fa-user-plus me-2"></i>Nouvel Agent</h5>
+        </div>
+        <div class="card-body">
+          <form (ngSubmit)="createAgent()" #agentForm="ngForm">
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="username" class="form-label">
+                  <i class="fas fa-user me-1"></i>Nom d'utilisateur
+                </label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="username"
+                  [(ngModel)]="newAgent.username"
+                  name="username"
+                  placeholder="Entrez le nom d'utilisateur"
+                  required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="email" class="form-label">
+                  <i class="fas fa-envelope me-1"></i>Email
+                </label>
+                <input
+                  type="email"
+                  class="form-control"
+                  id="email"
+                  [(ngModel)]="newAgent.email"
+                  name="email"
+                  placeholder="email@example.com"
+                  required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="password" class="form-label">
+                  <i class="fas fa-lock me-1"></i>Mot de passe
+                </label>
+                <input
+                  type="password"
+                  class="form-control"
+                  id="password"
+                  [(ngModel)]="newAgent.password"
+                  name="password"
+                  placeholder="••••••••"
+                  required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="confirmPassword" class="form-label">
+                  <i class="fas fa-lock me-1"></i>Confirmer le mot de passe
+                </label>
+                <input
+                  type="password"
+                  class="form-control"
+                  id="confirmPassword"
+                  [(ngModel)]="newAgent.confirmPassword"
+                  name="confirmPassword"
+                  placeholder="••••••••"
+                  required>
+              </div>
+            </div>
+            <div class="d-flex gap-2">
+              <button type="submit" class="btn btn-primary" [disabled]="creatingAgent || !agentForm.form.valid">
+                <span *ngIf="creatingAgent" class="spinner-border spinner-border-sm me-2"></span>
+                <i *ngIf="!creatingAgent" class="fas fa-save me-2"></i>
+                Créer l'Agent
+              </button>
+              <button type="button" class="btn btn-secondary" (click)="showCreateAgentForm = false">
+                <i class="fas fa-times me-2"></i>Annuler
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Agents List -->
+      <div *ngIf="loading.agents" class="text-center loading-container">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Chargement des agents...</span>
+        </div>
+        <p class="mt-3 text-muted">Chargement des agents...</p>
+      </div>
+
+      <div *ngIf="!loading.agents" class="table-container">
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th><i class="fas fa-hashtag me-2"></i>ID</th>
+                <th><i class="fas fa-user me-2"></i>Nom d'utilisateur</th>
+                <th><i class="fas fa-envelope me-2"></i>Email</th>
+                <th><i class="fas fa-shield-alt me-2"></i>Rôle</th>
+                <th><i class="fas fa-cog me-2"></i>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let agent of agents">
+                <td><strong>#{{ agent.id }}</strong></td>
+                <td><i class="fas fa-user-circle text-muted me-2"></i>{{ agent.username }}</td>
+                <td><i class="fas fa-envelope text-muted me-2"></i>{{ agent.email }}</td>
+                <td>
+                  <span class="badge bg-info">
+                    <i class="fas fa-user-tie me-1"></i>{{ agent.role || 'AGENT' }}
+                  </span>
+                </td>
+                <td>
+                  <button class="btn btn-danger btn-sm" (click)="deleteAgent(agent.id!)">
+                    <i class="fas fa-trash-alt me-1"></i>Supprimer
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Comptes Tab -->
+    <div *ngIf="activeTab === 'comptes'" class="tab-pane active">
+      <div class="section-header">
+        <h3><i class="fas fa-credit-card me-2"></i>Liste des Comptes</h3>
+        <span class="badge bg-success">{{ comptes.length }} comptes</span>
+      </div>
+
+      <div *ngIf="loading.comptes" class="text-center loading-container">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Chargement des comptes...</span>
+        </div>
+        <p class="mt-3 text-muted">Chargement des comptes...</p>
+      </div>
+
+      <div *ngIf="!loading.comptes" class="table-container">
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th><i class="fas fa-hashtag me-2"></i>ID</th>
+                <th><i class="fas fa-barcode me-2"></i>N° Compte</th>
+                <th><i class="fas fa-tag me-2"></i>Type</th>
+                <th><i class="fas fa-euro-sign me-2"></i>Solde</th>
+                <th><i class="fas fa-user me-2"></i>Client</th>
+                <th><i class="fas fa-calendar me-2"></i>Date de création</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let compte of comptes">
+                <td><strong>#{{ compte.id }}</strong></td>
+                <td><code>{{ compte.numeroCompte }}</code></td>
+                <td>
+                  <span class="badge" [class]="compte.typeCompte === 'COURANT' ? 'bg-primary' : 'bg-secondary'">
+                    <i [class]="compte.typeCompte === 'COURANT' ? 'fas fa-wallet' : 'fas fa-piggy-bank'"></i>
+                    {{ compte.typeCompte }}
+                  </span>
+                </td>
+                <td class="fw-bold text-success">
+                  <i class="fas fa-coins me-1"></i>{{ formatCurrency(compte.solde || 0) }}
+                </td>
+                <td>
+                  <span *ngIf="compte.client">
+                    <i class="fas fa-user-circle text-muted me-1"></i>
+                    {{ compte.client.prenom }} {{ compte.client.nom }}
+                  </span>
+                  <span *ngIf="!compte.client" class="text-muted">
+                    <i class="fas fa-question-circle me-1"></i>N/A
+                  </span>
+                </td>
+                <td>{{ formatDate(compte.dateCreation || '') }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

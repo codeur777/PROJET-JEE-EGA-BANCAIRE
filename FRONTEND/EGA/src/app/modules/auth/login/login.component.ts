@@ -3,6 +3,16 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { TokenService } from '../../../core/services/token.service';
+
+interface LoginResponse {
+  token: string;
+  user: {
+    email: string;
+    role: string;
+    [key: string]: any;
+  };
+}
 
 @Component({
   selector: 'app-login',
@@ -17,7 +27,7 @@ export class LoginComponent {
   loading = false;
   errorMessage = '';
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router, private tokenService: TokenService) {}
 
   onLogin() {
     // Validation
@@ -38,17 +48,18 @@ export class LoginComponent {
         console.log('✅ Réponse du serveur:', res);
         console.log('🔑 Token reçu:', res.token ? 'OUI' : 'NON');
         
-        // Stocker le token
+        // Stocker le token et les informations utilisateur
         if (res.token) {
-          localStorage.setItem('token', res.token);
-          localStorage.setItem('user', this.email);
+          this.tokenService.setToken(res.token);
           
-          console.log('💾 Token stocké, redirection vers /home...');
+          // Extraire les informations utilisateur du token ou de la réponse
+          const user = res.user || { email: this.email, role: 'AGENT' }; // Par défaut AGENT
+          this.tokenService.setUser(user);
           
-          // Rediriger vers home (pas dashboard car la route n'existe pas)
-          this.router.navigate(['/home']).then(success => {
-            console.log('🚀 Redirection:', success ? 'RÉUSSIE' : 'ÉCHOUÉE');
-          });
+          console.log('💾 Token et utilisateur stockés:', user);
+          
+          // Rediriger selon le rôle
+          this.redirectBasedOnRole(user.role);
         } else {
           console.error('❌ Pas de token dans la réponse');
           this.errorMessage = "Erreur : Token manquant";
@@ -86,6 +97,30 @@ export class LoginComponent {
         console.log('📢 Message affiché:', this.errorMessage);
       }
     });
+  }
+  
+  private redirectBasedOnRole(role: string) {
+    console.log('🔄 Redirection selon le rôle:', role);
+    
+    switch (role.toUpperCase()) {
+      case 'ADMIN':
+        console.log('👑 Redirection vers admin');
+        this.router.navigate(['/admin']);
+        break;
+      case 'AGENT':
+        console.log('👨‍💼 Redirection vers home (agent)');
+        this.router.navigate(['/home']);
+        break;
+      case 'CLIENT':
+      case 'USER':
+        console.log('👤 Redirection vers client dashboard');
+        this.router.navigate(['/client/dashboard']);
+        break;
+      default:
+        console.log('❓ Rôle inconnu, redirection vers home');
+        this.router.navigate(['/']);
+        break;
+    }
   }
   
   // Méthode optionnelle pour navigation programmatique

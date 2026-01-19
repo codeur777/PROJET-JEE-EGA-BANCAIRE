@@ -38,13 +38,16 @@ public class JwtUtils {
                 .getBody();
     }
 
-    private Boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
-    }
-
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
         return createToken(claims, userDetails.getUsername());
+    }
+
+    public String generateTokenForClient(com.example.EGA.entity.ClientAuth clientAuth) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("role", "CLIENT");
+        claims.put("clientId", clientAuth.getClient().getId());
+        return createToken(claims, clientAuth.getEmail());
     }
 
     private String createToken(Map<String, Object> claims, String subject) {
@@ -60,5 +63,19 @@ public class JwtUtils {
     public Boolean validateToken(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    }
+
+    public Boolean isTokenExpired(String token) {
+        return extractExpiration(token).before(new Date());
+    }
+
+    public String extractRole(String token) {
+        Claims claims = extractAllClaims(token);
+        return claims.get("role", String.class);
+    }
+
+    public Long extractClientId(String token) {
+        Claims claims = extractAllClaims(token);
+        return claims.get("clientId", Long.class);
     }
 }

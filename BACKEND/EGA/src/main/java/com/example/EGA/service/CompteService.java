@@ -29,4 +29,5 @@ public interface CompteService {
     void withdraw(Long id, double amount);
     void transfer(Long from, Long to, double amount);
     List<Transaction> getTransactionsWithinPeriod(Long id, LocalDateTime start, LocalDateTime end);
+    List<Compte> getComptesByClientId(Long clientId);
 }

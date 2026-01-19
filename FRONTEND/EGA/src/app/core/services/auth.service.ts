@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
+import { TokenService } from './token.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +11,11 @@ export class AuthService {
 
   private api = `${environment.apiUrl}/auth`;
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(
+    private http: HttpClient, 
+    private router: Router,
+    private tokenService: TokenService
+  ) {}
 
   login(email: string, password: string) {
     console.log('📩 Envoi de la requête:', email, password);
@@ -22,10 +27,18 @@ export class AuthService {
     });
   }
 
+  clientLogin(email: string, password: string) {
+    console.log('📩 Envoi de la requête client login:', email, password);
+
+    return this.http.post(`${this.api}/client/login`, {
+      email: email,
+      password: password
+    });
+  }
+
   register(data: any) {
-    // S'assurer que username est défini (peut être l'email par défaut)
+    // Le backend utilise email comme username, pas besoin d'envoyer username
     const registerData = {
-      username: data.fullname || data.email,  // Utiliser fullname comme username
       email: data.email,
       password: data.password
     };
@@ -35,12 +48,22 @@ export class AuthService {
   }
 
   logout() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    this.tokenService.clear();
     this.router.navigate(['/login']);
   }
 
-  isLoggedIn(): boolean {
-    return !!localStorage.getItem('token');
+  // Récupérer le rôle de l'utilisateur actuellement connecté
+  getCurrentRole(): string | null {
+    return this.tokenService.getRole();
+  }
+
+  // Récupérer l'utilisateur actuellement connecté
+  getCurrentUser() {
+    return this.tokenService.getUser();
+  }
+
+  // Vérifier si authentifié
+  isAuthenticated(): boolean {
+    return this.tokenService.isAuthenticated();
   }
 }

@@ -1,9 +1,11 @@
 package com.example.EGA.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 public class AuthResponseDTO {
     private String token;

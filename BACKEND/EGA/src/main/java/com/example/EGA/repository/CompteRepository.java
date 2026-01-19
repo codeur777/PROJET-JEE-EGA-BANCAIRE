@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.List;
 
 @Repository
 public interface CompteRepository extends JpaRepository<Compte, Long> {
@@ -22,4 +23,6 @@ public interface CompteRepository extends JpaRepository<Compte, Long> {
     // Méthode pour récupérer un compte par ID avec le client chargé
     @Query("SELECT c FROM Compte c LEFT JOIN FETCH c.proprietaire WHERE c.id = :id")
     Optional<Compte> findByIdWithClient(@Param("id") Long id);
+
+    List<Compte> findByProprietaireId(Long proprietaireId);
 }

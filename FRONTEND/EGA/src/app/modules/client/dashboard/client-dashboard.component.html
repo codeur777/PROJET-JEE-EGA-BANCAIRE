@@ -1,0 +1,148 @@
+<app-client-sidebar></app-client-sidebar>
+<div class="container-fluid mt-4">
+  <!-- Header -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center">
+        <h2>Tableau de Bord Client</h2>
+        <button class="btn btn-outline-danger" (click)="logout()">
+          <i class="fas fa-sign-out-alt me-2"></i>Déconnexion
+        </button>
+      </div>
+    </div>
+  <!-- Statistiques -->
+  <div class="row mb-4">
+    <div class="col-md-4 mb-3">
+      <div class="card stats-card">
+        <div class="card-body text-center">
+          <i class="fas fa-credit-card fa-2x text-primary mb-2"></i>
+          <h4 class="card-title">{{ comptes.length }}</h4>
+          <p class="card-text">Nombre de comptes</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 mb-3">
+      <div class="card stats-card">
+        <div class="card-body text-center">
+          <i class="fas fa-euro-sign fa-2x text-success mb-2"></i>
+          <h4 class="card-title">{{ totalSolde | currency:'EUR':'symbol':'1.2-2':'fr' }}</h4>
+          <p class="card-text">Solde total</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 mb-3">
+      <div class="card stats-card">
+        <div class="card-body text-center">
+          <i class="fas fa-exchange-alt fa-2x text-info mb-2"></i>
+          <h4 class="card-title">{{ totalTransactions }}</h4>
+          <p class="card-text">Transactions ce mois</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Comptes Section -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h5>Mes Comptes</h5>
+        </div>
+        <div class="card-body">
+          <div *ngIf="loading" class="text-center">
+            <div class="spinner-border" role="status">
+              <span class="visually-hidden">Chargement...</span>
+            </div>
+          </div>
+
+          <div *ngIf="!loading && comptes.length === 0" class="text-center text-muted">
+            Aucun compte trouvé
+          </div>
+
+          <div *ngIf="!loading && comptes.length > 0" class="row">
+            <div *ngFor="let compte of comptes" class="col-md-6 col-lg-4 mb-3">
+              <div class="card compte-card" [class.selected]="selectedCompte?.id === compte.id"
+                   (click)="onCompteChange(compte)">
+                <div class="card-body">
+                  <h6 class="card-title">{{ compte.typeCompte }}</h6>
+                  <p class="card-text mb-1">
+                    <strong>N° Compte:</strong> {{ compte.numeroCompte }}
+                  </p>
+                  <p class="card-text mb-1">
+                    <strong>Solde:</strong>
+                    <span class="solde-amount">{{ compte.solde | currency:'EUR':'symbol':'1.2-2':'fr' }}</span>
+                  </p>
+                  <p class="card-text">
+                    <small class="text-muted">
+                      Créé le: {{ compte.dateCreation | date:'dd/MM/yyyy' }}
+                    </small>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Transactions Section -->
+  <div class="row" *ngIf="selectedCompte">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5>Historique des Transactions - {{ selectedCompte.numeroCompte }}</h5>
+          <button class="btn btn-primary btn-sm" (click)="generateReleve(selectedCompte!.id!)" *ngIf="selectedCompte">
+            <i class="fas fa-download me-2"></i>Générer Relevé PDF
+          </button>
+        </div>
+        <div class="card-body">
+          <div *ngIf="transactions.length === 0" class="text-center text-muted">
+            Aucune transaction trouvée pour ce compte
+          </div>
+
+          <div *ngIf="transactions.length > 0" class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Type</th>
+                  <th>Montant</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let transaction of transactions">
+                  <td>{{ transaction.dateTransaction | date:'dd/MM/yyyy HH:mm' }}</td>
+                  <td>
+                    <span class="badge"
+                          [class.bg-success]="transaction.typeTransaction === 'DEPOT'"
+                          [class.bg-danger]="transaction.typeTransaction === 'RETRAIT'"
+                          [class.bg-info]="transaction.typeTransaction === 'VIREMENT'">
+                      {{ transaction.typeTransaction }}
+                    </span>
+                  </td>
+                  <td class="montant-cell"
+                      [class.text-success]="transaction.typeTransaction === 'DEPOT'"
+                      [class.text-danger]="transaction.typeTransaction === 'RETRAIT'">
+                    <span *ngIf="transaction.typeTransaction === 'DEPOT'">+</span>
+                    <span *ngIf="transaction.typeTransaction === 'RETRAIT'">-</span>
+                    {{ transaction.montant | currency:'f cfa':'symbol':'1.2-2':'fr' }}
+                  </td>
+                  <td>
+                    <span *ngIf="transaction.compteDestinationId">
+                      Vers compte {{ transaction.compteDestinationId }}
+                    </span>
+                    <span *ngIf="!transaction.compteDestinationId">
+                      -
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

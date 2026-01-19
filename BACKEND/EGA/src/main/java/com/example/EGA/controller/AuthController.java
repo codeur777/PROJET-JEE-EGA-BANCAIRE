@@ -2,10 +2,13 @@ package com.example.EGA.controller;
 
 import com.example.EGA.dto.AuthRequestDTO;
 import com.example.EGA.dto.AuthResponseDTO;
+import com.example.EGA.dto.ClientAuthDTO;
 import com.example.EGA.config.JwtUtils;
 import com.example.EGA.entity.User;
+import com.example.EGA.entity.ClientAuth;
 import com.example.EGA.service.UserService;
-import com.example.EGA.exception.AuthenticationException; // Assurez-vous d'importer votre exception
+import com.example.EGA.service.ClientAuthService;
+import com.example.EGA.exception.AuthenticationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +23,7 @@ import java.util.Map;
 public class AuthController {
 
     private final UserService userService;
+    private final ClientAuthService clientAuthService;
     private final JwtUtils jwtUtils;
 
     @PostMapping("/register")
@@ -35,23 +39,74 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthRequestDTO request) {
         try {
-            // 1. Appel au service (vérifie email et password)
-            User user = userService.login(request);
-            
-            // 2. Génération du Token
-            String token = jwtUtils.generateToken(user);
-            
-            // 3. Réponse propre
-            return ResponseEntity.ok(new AuthResponseDTO(token, "Connexion réussie !"));
-            
+            // Déterminer le type de connexion
+            String loginType = determineLoginType(request.getEmail());
+
+            if ("CLIENT".equals(loginType)) {
+                // Connexion client
+                ClientAuth clientAuth = clientAuthService.authenticateClient(request.getEmail(), request.getPassword());
+
+                // Générer un token avec le rôle CLIENT
+                String token = jwtUtils.generateTokenForClient(clientAuth);
+
+                ClientAuthDTO response = ClientAuthDTO.builder()
+                        .id(clientAuth.getId())
+                        .clientId(clientAuth.getClient().getId())
+                        .email(clientAuth.getEmail())
+                        .nom(clientAuth.getClient().getNom())
+                        .prenom(clientAuth.getClient().getPrenom())
+                        .build();
+
+                return ResponseEntity.ok(Map.of(
+                    "token", token,
+                    "user", response,
+                    "role", "CLIENT",
+                    "message", "Connexion client réussie !"
+                ));
+
+            } else {
+                // Connexion agent/admin
+                User user = userService.login(request);
+                String token = jwtUtils.generateToken(user);
+
+                // Créer un objet user pour la réponse
+                Map<String, Object> userResponse = Map.of(
+                    "id", user.getId(),
+                    "email", user.getEmail(),
+                    "role", user.getRole()
+                );
+
+                return ResponseEntity.ok(Map.of(
+                    "token", token,
+                    "user", userResponse,
+                    "role", user.getRole(),
+                    "message", "Connexion " + user.getRole().toLowerCase() + " réussie !"
+                ));
+            }
+
         } catch (AuthenticationException e) {
-            // Renvoie 401 si les identifiants sont faux
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                                  .body(Map.of("message", e.getMessage()));
         } catch (Exception e) {
-            // Renvoie 400 ou 500 pour les autres erreurs
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                                  .body(Map.of("message", "Erreur lors de la connexion : " + e.getMessage()));
         }
+    }
+
+    /**
+     * Détermine le type de connexion basé sur l'email
+     */
+    private String determineLoginType(String email) {
+        // Vérifier d'abord si c'est un client
+        try {
+            if (clientAuthService.authenticateClient(email, "dummy") != null) {
+                return "CLIENT";
+            }
+        } catch (Exception e) {
+            // Si l'authentification échoue, ce n'est pas un client
+        }
+
+        // Par défaut, c'est un agent
+        return "AGENT";
     }
 }
