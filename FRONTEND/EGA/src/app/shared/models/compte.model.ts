@@ -7,8 +7,13 @@ export interface Compte {
   clientId?: number | null ;
   dateCreation?: Date | string;
   // createdAt?: string | Date;
-  
-  // Relation avec le client (peut être chargé par le backend)
+
+  // Informations du client (incluses dans les réponses API)
+  clientNom?: string;
+  clientPrenom?: string;
+  clientEmail?: string;
+
+  // Pour compatibilité avec l'ancien format
   client?: {
     id?: number;
     nom: string;

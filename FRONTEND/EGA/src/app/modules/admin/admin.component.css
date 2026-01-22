@@ -277,10 +277,12 @@
   box-shadow: 0 4px 15px rgba(0,0,0,0.1);
   overflow: hidden;
   transition: all 0.3s ease;
+  background: #fff;
 }
 
 .card:hover {
   box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+  transform: translateY(-2px);
 }
 
 .card-header {
@@ -289,10 +291,17 @@
   font-weight: 700;
   padding: 1.5rem;
   font-size: 1.1rem;
+  color: #495057;
 }
 
 .card-body {
   padding: 1.5rem;
+  background: #fff;
+}
+
+/* Card actions spacing */
+.d-flex.gap-2 {
+  gap: 0.75rem !important;
 }
 
 /* Forms */
@@ -302,12 +311,18 @@
   padding: 0.75rem 1rem;
   transition: all 0.3s ease;
   font-size: 0.95rem;
+  background: #fff;
 }
 
 .form-control:focus {
   border-color: #667eea;
   box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
   transform: translateY(-2px);
+  background: #fff;
+}
+
+.form-control:hover:not(:focus) {
+  border-color: #dee2e6;
 }
 
 .form-label {
@@ -315,6 +330,22 @@
   color: #495057;
   margin-bottom: 0.5rem;
   font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+}
+
+/* Form rows spacing */
+.row .col-md-6 {
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+}
+
+.row .col-md-6:first-child {
+  padding-left: 0;
+}
+
+.row .col-md-6:last-child {
+  padding-right: 0;
 }
 
 /* Loading Spinner */
@@ -342,11 +373,14 @@
   font-weight: 700;
   color: #2d3748;
   margin: 0;
+  font-size: 1.25rem;
 }
 
 .section-header .badge {
   font-size: 1rem;
   padding: 0.6em 1.2em;
+  border-radius: 20px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 /* Animation */

@@ -99,14 +99,14 @@ public class AuthController {
     private String determineLoginType(String email) {
         // Vérifier d'abord si c'est un client
         try {
-            if (clientAuthService.authenticateClient(email, "dummy") != null) {
+            if (clientAuthService.findByEmail(email) != null) {
                 return "CLIENT";
             }
         } catch (Exception e) {
-            // Si l'authentification échoue, ce n'est pas un client
+            // Si la recherche échoue, ce n'est pas un client
         }
 
-        // Par défaut, c'est un agent
+        // Par défaut, c'est un agent/admin
         return "AGENT";
     }
 }

@@ -24,5 +24,9 @@ public interface CompteRepository extends JpaRepository<Compte, Long> {
     @Query("SELECT c FROM Compte c LEFT JOIN FETCH c.proprietaire WHERE c.id = :id")
     Optional<Compte> findByIdWithClient(@Param("id") Long id);
 
+    // Méthode pour récupérer tous les comptes avec les clients chargés
+    @Query("SELECT c FROM Compte c LEFT JOIN FETCH c.proprietaire")
+    List<Compte> findAllWithClients();
+
     List<Compte> findByProprietaireId(Long proprietaireId);
 }

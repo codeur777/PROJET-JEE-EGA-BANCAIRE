@@ -245,19 +245,6 @@
           <form (ngSubmit)="createAgent()" #agentForm="ngForm">
             <div class="row">
               <div class="col-md-6 mb-3">
-                <label for="username" class="form-label">
-                  <i class="fas fa-user me-1"></i>Nom d'utilisateur
-                </label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="username"
-                  [(ngModel)]="newAgent.username"
-                  name="username"
-                  placeholder="Entrez le nom d'utilisateur"
-                  required>
-              </div>
-              <div class="col-md-6 mb-3">
                 <label for="email" class="form-label">
                   <i class="fas fa-envelope me-1"></i>Email
                 </label>
@@ -325,8 +312,7 @@
             <thead>
               <tr>
                 <th><i class="fas fa-hashtag me-2"></i>ID</th>
-                <th><i class="fas fa-user me-2"></i>Nom d'utilisateur</th>
-                <th><i class="fas fa-envelope me-2"></i>Email</th>
+                <th><i class="fas fa-envelope me-2"></i>Email / Identifiant</th>
                 <th><i class="fas fa-shield-alt me-2"></i>Rôle</th>
                 <th><i class="fas fa-cog me-2"></i>Actions</th>
               </tr>
@@ -334,7 +320,6 @@
             <tbody>
               <tr *ngFor="let agent of agents">
                 <td><strong>#{{ agent.id }}</strong></td>
-                <td><i class="fas fa-user-circle text-muted me-2"></i>{{ agent.username }}</td>
                 <td><i class="fas fa-envelope text-muted me-2"></i>{{ agent.email }}</td>
                 <td>
                   <span class="badge bg-info">

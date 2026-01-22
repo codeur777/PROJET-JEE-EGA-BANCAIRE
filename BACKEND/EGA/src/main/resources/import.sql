@@ -1,6 +1,6 @@
--- 📌 Création d'un utilisateur admin (mdp : admin)
+-- 📌 Création d'un utilisateur admin (mdp : admin123)
 INSERT INTO users (id, email, password, role, enabled) VALUES
-(1, 'admin@egabank.com', '$2a$10$5Y9EdfyX7PG6nULzMZ0KZ.J6M5dP8xV.UF1FCpljPlNf74v1WVU3m', 'ADMIN', true);
+(1, 'admin@egabank.tg', '$2a$10$JLVj5qndzn1Sxb9FsdaGF.KE1/teIaJ/lKpQXWrmCd3kDXWO4Z4Um', 'ADMIN', true);
 
 -- 📌 Clients
 INSERT INTO clients (id, nom, prenom, date_naissance, sexe, adresse, telephone, email, nationalite, statut, ville, code_postal, type_document, numero_document, date_inscription) VALUES
@@ -12,10 +12,10 @@ INSERT INTO comptes (id, numero_compte, type_compte, date_creation, solde, clien
 (1, 'FR300030123400000001', 'COURANT', '2024-01-10', 50000, 1),
 (2, 'FR300030123400000002', 'EPARGNE', '2024-01-12', 120000, 2);
 
--- 📌 Client Auth
+-- 📌 Client Auth (mdp : client123)
 INSERT INTO client_auth (id, client_id, email, password, actif) VALUES
-(1, 1, 'john.doe@gmail.com', '$2a$10$encryptedpassword1', true),
-(2, 2, 'anna.smith@gmail.com', '$2a$10$encryptedpassword2', true);
+(1, 1, 'john.doe@gmail.com', '$2a$10$6J9EdfyX7PG6nULzMZ0KZ.J6M5dP8xV.UF1FCpljPlNf74v1WVU3m', true),
+(2, 2, 'anna.smith@gmail.com', '$2a$10$6J9EdfyX7PG6nULzMZ0KZ.J6M5dP8xV.UF1FCpljPlNf74v1WVU3m', true);
 
 -- 📌 Transactions
 -- DEPOT sur le compte 1

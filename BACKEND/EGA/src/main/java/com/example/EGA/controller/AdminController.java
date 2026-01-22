@@ -1,13 +1,22 @@
 package com.example.EGA.controller;
 
-import com.example.EGA.entity.User;
-import com.example.EGA.service.AdminService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.EGA.entity.User;
+import com.example.EGA.service.AdminService;
+
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -30,7 +39,7 @@ public class AdminController {
                 "message", "Agent créé avec succès",
                 "agent", Map.of(
                     "id", createdAgent.getId(),
-                    "username", createdAgent.getUsername(),
+                    "username", createdAgent.getUsername(), // Use email as username since User entity uses email as username
                     "email", createdAgent.getEmail(),
                     "role", createdAgent.getRole()
                 )

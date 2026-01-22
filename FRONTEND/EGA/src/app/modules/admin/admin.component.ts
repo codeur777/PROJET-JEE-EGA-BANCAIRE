@@ -60,7 +60,6 @@ export class AdminComponent implements OnInit, AfterViewInit {
 
   // Nouveau agent
   newAgent = {
-    username: '',
     email: '',
     password: '',
     confirmPassword: ''
@@ -98,13 +97,14 @@ export class AdminComponent implements OnInit, AfterViewInit {
     Promise.all([
       this.clientService.getClients().toPromise(),
       this.compteService.getComptes().toPromise(),
-      this.adminService.getAllAgents().toPromise()
-    ]).then(([clients, comptes, agents]) => {
+      this.adminService.getAllAgents().toPromise(),
+      this.getTotalTransactions()
+    ]).then(([clients, comptes, agents, totalTransactions]) => {
       this.stats.totalClients = clients?.length || 0;
       this.stats.totalComptes = comptes?.length || 0;
       this.stats.totalAgents = agents?.length || 0;
+      this.stats.totalTransactions = totalTransactions || 0;
       this.stats.soldeTotal = comptes?.reduce((sum: number, compte: Compte) => sum + (compte.solde || 0), 0) || 0;
-      this.stats.totalTransactions = this.stats.totalComptes * 5;
 
       // Statistiques détaillées
       this.stats.clientsActifs = clients?.filter((c: Client) => c.statut === 'ACTIF').length || 0;
@@ -113,13 +113,51 @@ export class AdminComponent implements OnInit, AfterViewInit {
       this.stats.comptesEpargne = comptes?.filter((c: Compte) => c.typeCompte === 'EPARGNE').length || 0;
 
       this.loading.stats = false;
-      
+
       // Créer les graphiques après le chargement des données
       setTimeout(() => this.createCharts(), 100);
     }).catch(error => {
       console.error('Erreur lors du chargement des statistiques:', error);
       this.loading.stats = false;
     });
+  }
+
+  // Méthode pour calculer le nombre total de transactions
+  private async getTotalTransactions(): Promise<number> {
+    try {
+      // Pour chaque compte, récupérer les transactions du mois dernier
+      const comptes = await this.compteService.getComptes().toPromise();
+      if (!comptes || comptes.length === 0) return 0;
+
+      const currentDate = new Date();
+      const lastMonth = new Date();
+      lastMonth.setMonth(currentDate.getMonth() - 1);
+
+      const debut = lastMonth.toISOString().split('T')[0];
+      const fin = currentDate.toISOString().split('T')[0];
+
+      let totalTransactions = 0;
+
+      // Pour chaque compte, compter les transactions du mois
+      for (const compte of comptes.slice(0, 10)) { // Limiter à 10 comptes pour éviter trop de requêtes
+        try {
+          const transactions = await this.transactionService.getHistorique(compte.id!, debut, fin).toPromise();
+          totalTransactions += transactions?.length || 0;
+        } catch (error) {
+          // Ignorer les erreurs pour les comptes individuels
+          console.warn(`Erreur pour le compte ${compte.id}:`, error);
+        }
+      }
+
+      // Estimer pour les autres comptes (moyenne par compte)
+      const averagePerAccount = totalTransactions / Math.min(comptes.length, 10);
+      const estimatedTotal = Math.round(averagePerAccount * comptes.length);
+
+      return estimatedTotal;
+    } catch (error) {
+      console.error('Erreur lors du calcul des transactions:', error);
+      return 0;
+    }
   }
 
   loadClients() {
@@ -404,14 +442,13 @@ export class AdminComponent implements OnInit, AfterViewInit {
 
     this.creatingAgent = true;
     this.adminService.createAgent({
-      username: this.newAgent.username,
       email: this.newAgent.email,
       password: this.newAgent.password
     }).subscribe({
       next: (response: any) => {
         this.creatingAgent = false;
         this.showCreateAgentForm = false;
-        this.newAgent = { username: '', email: '', password: '', confirmPassword: '' };
+        this.newAgent = { email: '', password: '', confirmPassword: '' };
         this.loadAgents();
         alert('Agent créé avec succès');
       },

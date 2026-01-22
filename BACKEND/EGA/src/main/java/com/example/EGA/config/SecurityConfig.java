@@ -1,5 +1,7 @@
 package com.example.EGA.config;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,8 +14,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
-
-import java.util.List;
 
 @Configuration
 public class SecurityConfig {
@@ -40,8 +40,12 @@ public class SecurityConfig {
                         "/h2-console/**",
                         "/api/clients/**",
                         "/api/comptes/**",
-                        "/api/transactions/**"
-            
+                        "/api/transactions/**",
+                        "/api/admin/**",
+                        "/api/client/**",
+                        "/api/client-auth/**",
+                        "/api/releves/**"
+
                 ).permitAll()
                 .anyRequest().authenticated()
             )

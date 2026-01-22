@@ -56,7 +56,7 @@ public class CompteServiceImpl implements CompteService {
 
     @Override
     public List<Compte> getAllComptes() {
-        return compteRepository.findAll();
+        return compteRepository.findAllWithClients();
     }
 
     @Override

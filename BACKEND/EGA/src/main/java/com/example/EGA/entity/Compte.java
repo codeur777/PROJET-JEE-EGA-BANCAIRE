@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import com.example.EGA.enumerate.TypeCompte;
+import com.example.EGA.enumerate.StatutCompte;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
@@ -33,6 +34,9 @@ public class Compte {
     @Enumerated(EnumType.STRING)
     @NotNull
     private TypeCompte typeCompte;
+
+    @Enumerated(EnumType.STRING)
+    private StatutCompte statut = StatutCompte.OUVERT;
 
     private LocalDate dateCreation;
 

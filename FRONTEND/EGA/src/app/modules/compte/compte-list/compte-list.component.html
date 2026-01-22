@@ -84,7 +84,7 @@
         <div class="compte-infos">
           <div class="info-row">
             <span class="info-label">Propriétaire:</span>
-            <span class="info-value">{{ compte.client?.nom || 'Non défini' }}</span>
+            <span class="info-value">{{ (compte.clientPrenom || compte.client?.prenom || '') + ' ' + (compte.clientNom || compte.client?.nom || 'Non défini') }}</span>
           </div>
           <div class="info-row">
             <span class="info-label">Date:</span>

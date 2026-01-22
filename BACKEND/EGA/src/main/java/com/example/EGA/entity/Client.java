@@ -52,7 +52,7 @@ public class Client {
 
     @NotBlank(message = "Statut obligatoire")
     private String statut;        // ex: ACTIF
-    @NotBlank(message = "Ville obligatoire")
+    @Column(nullable = true)
     private String ville;
     @NotBlank(message = "Code postal obligatoire")
     private String codePostal;

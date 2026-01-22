@@ -19,7 +19,7 @@ export class AdminService {
   }
 
   // Créer un nouvel agent
-  createAgent(agentData: { username: string; email: string; password: string }): Observable<any> {
+  createAgent(agentData: { email: string; password: string }): Observable<any> {
     return this.http.post(`${this.api}/agents`, agentData);
   }
 

@@ -1,7 +1,7 @@
 package com.example.EGA.controller;
 
 import com.example.EGA.dto.CompteDto;
-import com.example.EGA.entity.Compte;
+import com.example.EGA.dto.CompteWithClientDTO;
 import com.example.EGA.entity.Transaction;
 import com.example.EGA.repository.CompteRepository;
 import com.example.EGA.service.CompteService;
@@ -10,8 +10,11 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import com.example.EGA.entity.Compte;
 
 @RestController
 @RequestMapping("/api/comptes")
@@ -23,8 +26,20 @@ public class CompteController {
     private final CompteRepository compteRepository; // Injection correcte
 
     @GetMapping
-    public List<Compte> getAll() {
-        return compteService.getAllComptes();
+    public List<CompteWithClientDTO> getAll() {
+        List<Compte> comptes = compteService.getAllComptes();
+        return comptes.stream().map(compte -> new CompteWithClientDTO(
+            compte.getId(),
+            compte.getNumeroCompte(),
+            compte.getSolde(),
+            compte.getTypeCompte() != null ? compte.getTypeCompte().name() : null,
+            compte.getStatut() != null ? compte.getStatut().name() : null,
+            compte.getDateCreation(),
+            compte.getProprietaire() != null ? compte.getProprietaire().getId() : null,
+            compte.getProprietaire() != null ? compte.getProprietaire().getNom() : null,
+            compte.getProprietaire() != null ? compte.getProprietaire().getPrenom() : null,
+            compte.getProprietaire() != null ? compte.getProprietaire().getEmail() : null
+        )).collect(Collectors.toList());
     }
 
     @GetMapping("/client/{clientId}")
