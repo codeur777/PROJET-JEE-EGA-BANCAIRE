@@ -24,4 +24,9 @@ public interface ClientAuthService {
      * Trouve l'authentification d'un client par son ID
      */
     ClientAuth findByClientId(Long clientId);
+
+    /**
+     * Trouve l'authentification d'un client par son email
+     */
+    ClientAuth findByEmail(String email);
 }

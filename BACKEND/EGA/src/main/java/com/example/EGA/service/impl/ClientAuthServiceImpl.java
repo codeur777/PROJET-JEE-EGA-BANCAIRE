@@ -67,4 +67,10 @@ public class ClientAuthServiceImpl implements ClientAuthService {
         return clientAuthRepository.findByClientId(clientId)
                 .orElse(null);
     }
+
+    @Override
+    public ClientAuth findByEmail(String email) {
+        return clientAuthRepository.findByEmail(email)
+                .orElse(null);
+    }
 }

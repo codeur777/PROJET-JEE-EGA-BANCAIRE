@@ -16,7 +16,7 @@
 
   <!-- SUCCESS MESSAGE -->
   <div class="success-message" *ngIf="successMessage">
-    ✅ {{ successMessage }}
+     {{ successMessage }}
   </div>
 
   <!-- FORM -->
@@ -39,7 +39,7 @@
           <div class="type-option" 
                [class.selected]="compte.typeCompte === 'COURANT'"
                (click)="compte.typeCompte = 'COURANT'">
-            <div class="type-icon">💳</div>
+            <div class="type-icon"></div>
             <div class="type-name">Compte Courant</div>
             <div class="type-description">
               Pour les transactions quotidiennes et les opérations courantes
@@ -49,7 +49,7 @@
           <div class="type-option" 
                [class.selected]="compte.typeCompte === 'EPARGNE'"
                (click)="compte.typeCompte = 'EPARGNE'">
-            <div class="type-icon">🏦</div>
+            <div class="type-icon"></div>
             <div class="type-name">Compte Épargne</div>
             <div class="type-description">
               Pour économiser et faire fructifier votre argent
@@ -87,7 +87,7 @@
               Format IBAN international (sera généré automatiquement si laissé vide)
             </span>
             <span class="input-error" *ngIf="numeroCompte.invalid && numeroCompte.touched">
-              ⚠️ Le numéro de compte est requis
+               Le numéro de compte est requis
             </span>
           </div>
 
@@ -117,9 +117,9 @@
               name="statut"
               [(ngModel)]="compte.statut"
               required>
-              <option value="OUVERT">✅ Ouvert</option>
-              <option value="BLOQUE">🔒 Bloqué</option>
-              <option value="FERME">❌ Fermé</option>
+              <option value="OUVERT"> Ouvert</option>
+              <option value="BLOQUE"> Bloqué</option>
+              <option value="FERME"> Fermé</option>
             </select>
           </div>
         </div>
@@ -163,7 +163,7 @@
               Sélectionnez le propriétaire du compte dans la liste
             </span>
             <span class="input-error" *ngIf="clientId.invalid && clientId.touched">
-              ⚠️ Vous devez sélectionner un client
+               Vous devez sélectionner un client
             </span>
           </div>
         </div>
@@ -215,14 +215,14 @@
       <!-- ACTIONS -->
       <div class="form-actions">
         <a routerLink="/compte" class="btn-cancel">
-          ✕ Annuler
+           Annuler
         </a>
         <button 
           type="submit" 
           class="btn-submit" 
           [disabled]="compteForm.invalid || loading">
           <span *ngIf="!loading">✓ {{ id ? 'Mettre à jour' : 'Créer le compte' }}</span>
-          <span *ngIf="loading">⏳ Enregistrement...</span>
+          <span *ngIf="loading"> Enregistrement...</span>
         </button>
       </div>
     </div>
